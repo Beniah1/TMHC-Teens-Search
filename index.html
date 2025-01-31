@@ -324,33 +324,30 @@
 
         .modal-content {
             background: white;
-            margin: 15px auto;
-            padding: 20px;
-            border-radius: 15px;
-            width: 95%;
+            padding: 2rem;
+            border-radius: 12px;
+            width: 90%;
             max-width: 600px;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
-            max-height: 95vh;
+            max-height: 90vh;
             overflow-y: auto;
             position: relative;
+            margin: 2rem auto;
             animation: modalContentSlideIn 0.3s ease-out;
-            transform-origin: top;
         }
 
         @media (min-width: 640px) {
             .modal-content {
-                margin: 30px auto;
-                padding: 25px;
-                width: 90%;
+                padding: 2.5rem;
+                margin: 3rem auto;
             }
         }
 
         .close-button {
             position: absolute;
-            top: 15px;
-            right: 15px;
-            width: 30px;
-            height: 30px;
+            top: 1.5rem;
+            right: 1.5rem;
+            width: 2.5rem;
+            height: 2.5rem;
             border-radius: 50%;
             background: #f1f1f1;
             border: none;
@@ -358,7 +355,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 18px;
+            font-size: 1.5rem;
             color: #666;
             transition: all 0.2s ease;
             z-index: 10;
@@ -371,59 +368,47 @@
         }
 
         .form-group {
-            margin-bottom: 20px;
+            margin-bottom: 1.5rem;
         }
 
-        .form-group label {
-            display: block;
-            margin-bottom: 8px;
-            color: #2c3e50;
-            font-weight: 500;
-            font-size: 0.95rem;
-        }
-
-        .form-buttons {
+        .form-actions {
             display: flex;
-            flex-direction: column;
-            gap: 10px;
-            margin-top: 25px;
+            gap: 1rem;
+            margin-top: 2rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid #e5e7eb;
+            position: sticky;
+            bottom: 0;
+            background: white;
+            padding-bottom: 1rem;
         }
 
-        @media (min-width: 480px) {
-            .form-buttons {
-                flex-direction: row;
-                gap: 15px;
-            }
-
-            .form-buttons button {
-                flex: 1;
-            }
-        }
-
-        .form-buttons button {
-            width: 100%;
-            padding: 12px;
+        .form-actions button {
+            flex: 1;
+            padding: 0.75rem 1.5rem;
             border-radius: 8px;
-            font-weight: 500;
-            transition: all 0.3s ease;
+            font-weight: 600;
+            transition: all 0.2s ease;
         }
 
-        .attendance-grid {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 15px;
-            margin-top: 10px;
+        .cancel-button {
+            background: #ef4444;
+            color: white;
+            border: none;
         }
 
-        @media (min-width: 480px) {
-            .attendance-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
+        .cancel-button:hover {
+            background: #dc2626;
         }
 
-        #modal select,
-        #modal input {
-            background: rgba(76, 175, 80, 0.05);
+        .save-button {
+            background: #45a049;
+            color: white;
+            border: none;
+        }
+
+        .save-button:hover {
+            background: #357d39;
         }
     </style>
 </head>
@@ -463,15 +448,19 @@
     <!-- Modal -->
     <div id="modal" class="modal">
         <div class="modal-content">
-            <button id="closeButton" class="close-button">×</button>
+            <button id="closeButton" class="absolute top-4 right-4 text-gray-500 hover:text-gray-700">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+            </button>
             <h2 id="modalTitle" class="text-2xl font-bold mb-6">Add New Information</h2>
-            <form id="infoForm" class="space-y-6">
+            <form id="infoForm" class="space-y-4">
                 <div class="form-group">
-                    <label>Full Name</label>
+                    <label for="nameInput">Full Name</label>
                     <input type="text" id="nameInput" required>
                 </div>
                 <div class="form-group">
-                    <label>Gender</label>
+                    <label for="genderInput">Gender</label>
                     <select id="genderInput" required>
                         <option value="">Select Gender</option>
                         <option value="Male">Male</option>
@@ -479,59 +468,52 @@
                     </select>
                 </div>
                 <div class="form-group">
-                    <label>Phone Number</label>
+                    <label for="phoneInput">Phone Number</label>
                     <input type="text" id="phoneInput">
                 </div>
                 <div class="form-group">
-                    <label>Age</label>
-                    <input type="number" id="ageInput" min="0" max="120">
+                    <label for="ageInput">Age</label>
+                    <input type="number" id="ageInput" min="0">
                 </div>
                 <div class="form-group">
-                    <label>Current Level</label>
+                    <label for="levelInput">Current Level</label>
                     <input type="text" id="levelInput">
                 </div>
                 <div class="form-group">
-                    <label>Attendance</label>
-                    <div class="attendance-grid">
-                        <div>
-                            <label>5th</label>
-                            <select id="attendance5th">
-                                <option value="">Select</option>
-                                <option value="Present">Present</option>
-                                <option value="Absent">Absent</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label>12th</label>
-                            <select id="attendance12th">
-                                <option value="">Select</option>
-                                <option value="Present">Present</option>
-                                <option value="Absent">Absent</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label>19th</label>
-                            <select id="attendance19th">
-                                <option value="">Select</option>
-                                <option value="Present">Present</option>
-                                <option value="Absent">Absent</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label>26th</label>
-                            <select id="attendance26th">
-                                <option value="">Select</option>
-                                <option value="Present">Present</option>
-                                <option value="Absent">Absent</option>
-                            </select>
-                        </div>
-                    </div>
+                    <label for="attendance5th">Attendance 5th</label>
+                    <select id="attendance5th">
+                        <option value="">Select Status</option>
+                        <option value="Present">Present</option>
+                        <option value="Absent">Absent</option>
+                    </select>
                 </div>
-                <div class="form-buttons">
-                    <button type="button" id="cancelButton" class="bg-gray-100 text-gray-700 hover:bg-gray-200">
-                        Cancel
-                    </button>
-                    <button type="submit" class="search-button">Save</button>
+                <div class="form-group">
+                    <label for="attendance12th">Attendance 12th</label>
+                    <select id="attendance12th">
+                        <option value="">Select Status</option>
+                        <option value="Present">Present</option>
+                        <option value="Absent">Absent</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="attendance19th">Attendance 19th</label>
+                    <select id="attendance19th">
+                        <option value="">Select Status</option>
+                        <option value="Present">Present</option>
+                        <option value="Absent">Absent</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="attendance26th">Attendance 26th</label>
+                    <select id="attendance26th">
+                        <option value="">Select Status</option>
+                        <option value="Present">Present</option>
+                        <option value="Absent">Absent</option>
+                    </select>
+                </div>
+                <div class="form-actions">
+                    <button type="button" id="cancelButton" class="cancel-button">Cancel</button>
+                    <button type="submit" class="save-button">Save</button>
                 </div>
             </form>
         </div>
