@@ -342,19 +342,57 @@
             }
         }
 
+        @keyframes modalClose {
+            0% {
+                opacity: 1;
+                transform: scale(1);
+            }
+            100% {
+                opacity: 0;
+                transform: scale(0.8);
+            }
+        }
+
+        @keyframes buttonPress {
+            0% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(0.95);
+            }
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        .modal.closing {
+            animation: modalClose 0.2s ease-out forwards;
+        }
+
+        .button-press {
+            animation: buttonPress 0.2s ease-out forwards;
+        }
+
         .form-actions {
             display: flex;
-            justify-content: flex-end;
+            justify-content: center;
             gap: 1rem;
             margin-top: 2rem;
             padding: 1rem;
-            background: white;
+            background: rgba(44, 121, 46, 0.25);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
             position: sticky;
             bottom: 0;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
 
         .form-actions button {
-            min-width: 120px;
+            min-width: 140px;
+            max-width: 200px;
+            width: 30%;
             padding: 0.75rem 1.5rem;
             border-radius: 8px;
             font-weight: 600;
@@ -519,7 +557,7 @@
                 <div class="form-group">
                     <label for="genderInput">Gender</label>
                     <select id="genderInput" required>
-                        <option value="">Select Gender</option>
+                        <option value="" disabled selected>Select Gender</option>
                         <option value="Male">Male</option>
                         <option value="Female">Female</option>
                     </select>
@@ -534,12 +572,22 @@
                 </div>
                 <div class="form-group">
                     <label for="levelInput">Current Level</label>
-                    <input type="text" id="levelInput">
+                    <select id="levelInput" required>
+                        <option value="" disabled selected>Select Level</option>
+                        <option value="SHS1">SHS1</option>
+                        <option value="SHS2">SHS2</option>
+                        <option value="SHS3">SHS3</option>
+                        <option value="JHS1">JHS1</option>
+                        <option value="JHS2">JHS2</option>
+                        <option value="JHS3">JHS3</option>
+                        <option value="COMPLETED">COMPLETED</option>
+                        <option value="UNIVERSITY">UNIVERSITY</option>
+                    </select>
                 </div>
                 <div class="form-group">
                     <label for="attendance5th">Attendance 5th</label>
                     <select id="attendance5th">
-                        <option value="">Select Status</option>
+                        <option value="" disabled selected>Select Status</option>
                         <option value="Present">Present</option>
                         <option value="Absent">Absent</option>
                     </select>
@@ -547,7 +595,7 @@
                 <div class="form-group">
                     <label for="attendance12th">Attendance 12th</label>
                     <select id="attendance12th">
-                        <option value="">Select Status</option>
+                        <option value="" disabled selected>Select Status</option>
                         <option value="Present">Present</option>
                         <option value="Absent">Absent</option>
                     </select>
@@ -555,7 +603,7 @@
                 <div class="form-group">
                     <label for="attendance19th">Attendance 19th</label>
                     <select id="attendance19th">
-                        <option value="">Select Status</option>
+                        <option value="" disabled selected>Select Status</option>
                         <option value="Present">Present</option>
                         <option value="Absent">Absent</option>
                     </select>
@@ -563,7 +611,7 @@
                 <div class="form-group">
                     <label for="attendance26th">Attendance 26th</label>
                     <select id="attendance26th">
-                        <option value="">Select Status</option>
+                        <option value="" disabled selected>Select Status</option>
                         <option value="Present">Present</option>
                         <option value="Absent">Absent</option>
                     </select>

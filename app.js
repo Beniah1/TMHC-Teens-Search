@@ -40,12 +40,23 @@ function debounce(func, wait) {
     };
 }
 
+// Debounce function with shorter delay
+const debouncedFilter = debounce(filterItems, 150); // Reduced from 300ms to 150ms
+
+// Cache for search results
+let searchCache = new Map();
+
 // Event Listeners
-const debouncedFilter = debounce(filterItems, 300); // 300ms delay
 searchInput.addEventListener('input', debouncedFilter);
 addButton.addEventListener('click', () => showModal());
-cancelButton.addEventListener('click', hideModal);
-closeButton.addEventListener('click', hideModal);
+cancelButton.addEventListener('click', (e) => {
+    addButtonPressAnimation(e.target);
+    setTimeout(hideModal, 100);
+});
+closeButton.addEventListener('click', (e) => {
+    addButtonPressAnimation(e.target);
+    setTimeout(hideModal, 100);
+});
 infoForm.addEventListener('submit', handleSubmit);
 
 // Close modal when clicking outside
@@ -60,6 +71,13 @@ async function filterItems() {
     
     if (!searchTerm) {
         cardsContainer.innerHTML = '';
+        return;
+    }
+
+    // Check cache first
+    const cacheKey = searchTerm;
+    if (searchCache.has(cacheKey)) {
+        displayItems(searchCache.get(cacheKey));
         return;
     }
 
@@ -80,6 +98,14 @@ async function filterItems() {
         if (data.length === 0) {
             cardsContainer.innerHTML = '<p class="text-white text-center">No results found</p>';
             return;
+        }
+
+        // Cache the results
+        searchCache.set(cacheKey, data);
+        // Limit cache size to prevent memory issues
+        if (searchCache.size > 100) {
+            const firstKey = searchCache.keys().next().value;
+            searchCache.delete(firstKey);
         }
 
         displayItems(data);
@@ -114,20 +140,34 @@ function showModal(item = null) {
 }
 
 function hideModal() {
-    modal.style.display = 'none';
-    infoForm.reset();
-    editingId = null;
+    const modalElement = document.getElementById('modal');
+    modalElement.classList.add('closing');
+    setTimeout(() => {
+        modalElement.style.display = 'none';
+        modalElement.classList.remove('closing');
+        infoForm.reset();
+        editingId = null;
+    }, 200);
+}
+
+function addButtonPressAnimation(button) {
+    button.classList.add('button-press');
+    setTimeout(() => button.classList.remove('button-press'), 200);
 }
 
 async function handleSubmit(e) {
     e.preventDefault();
+
+    // Disable form submission while processing
+    const submitButton = e.target.querySelector('button[type="submit"]');
+    submitButton.disabled = true;
 
     const formData = {
         full_name: nameInput.value.trim(),
         gender: genderInput.value,
         phone_number: phoneInput.value.trim(),
         age: parseInt(ageInput.value) || null,
-        current_level: levelInput.value.trim(),
+        current_level: levelInput.value,
         attendance_5th: attendance5th.value,
         attendance_12th: attendance12th.value,
         attendance_19th: attendance19th.value,
@@ -137,6 +177,7 @@ async function handleSubmit(e) {
     if (!formData.full_name) {
         showToast('error');
         nameInput.focus();
+        submitButton.disabled = false;
         return;
     }
 
@@ -158,11 +199,16 @@ async function handleSubmit(e) {
         if (error) {
             console.error('Error saving data:', error);
             showToast('error');
+            submitButton.disabled = false;
             return;
         }
 
+        // Clear the cache since data has changed
+        searchCache.clear();
+        
         showToast('success');
         hideModal();
+        
         // Only refresh the display if there's a search term
         if (searchInput.value.trim()) {
             filterItems();
@@ -170,6 +216,8 @@ async function handleSubmit(e) {
     } catch (error) {
         console.error('Error:', error);
         showToast('error');
+    } finally {
+        submitButton.disabled = false;
     }
 }
 
