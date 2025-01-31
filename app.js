@@ -158,9 +158,13 @@ function displayItems(items) {
     elements.cardsContainer.appendChild(fragment);
 }
 
-async function showModal(item = null) {
+// Function to show modal for adding/editing
+function showModal(item = null) {
     editingId = item ? item.id : null;
     elements.modalTitle.textContent = item ? 'Edit Information' : 'Add New Information';
+
+    // Reset form before setting new values
+    elements.infoForm.reset();
 
     if (item) {
         elements.nameInput.value = item.full_name || '';
@@ -172,13 +176,9 @@ async function showModal(item = null) {
         elements.attendance12th.value = item.attendance_12th || '';
         elements.attendance19th.value = item.attendance_19th || '';
         elements.attendance26th.value = item.attendance_26th || '';
-    } else {
-        elements.infoForm.reset();
     }
 
     elements.modal.style.display = 'block';
-    // Force reflow to trigger animation
-    elements.modal.offsetHeight;
     elements.nameInput.focus();
 }
 
@@ -208,21 +208,28 @@ async function handleSubmit(e) {
     }
 
     try {
-        const { error } = editingId
-            ? await supabase
+        let response;
+        if (editingId) {
+            response = await supabase
                 .from('csv_data_january')
                 .update(formData)
-                .eq('id', editingId)
-            : await supabase
+                .eq('id', editingId);
+        } else {
+            response = await supabase
                 .from('csv_data_january')
                 .insert([formData]);
+        }
 
-        if (error) throw error;
+        if (response.error) {
+            throw response.error;
+        }
 
+        // Clear the cache since data has changed
         searchCache.clear();
         showToast('success');
         hideModal();
         
+        // Refresh the current search results
         if (elements.searchInput.value.trim()) {
             filterItems();
         }
@@ -286,19 +293,31 @@ async function deleteItem(id) {
         return;
     }
 
-    const { error } = await supabase
-        .from('csv_data_january')
-        .delete()
-        .eq('id', id);
+    try {
+        const { error } = await supabase
+            .from('csv_data_january')
+            .delete()
+            .eq('id', id);
 
-    if (error) {
-        alert('Error deleting record: ' + error.message);
-        return;
-    }
+        if (error) {
+            console.error('Error deleting record:', error);
+            showToast('error');
+            return;
+        }
 
-    // Only refresh the display if there's a search term
-    if (elements.searchInput.value.trim()) {
-        filterItems();
+        showToast('success');
+        // Clear the cache since data has changed
+        searchCache.clear();
+        
+        // Refresh the current search results
+        if (elements.searchInput.value.trim()) {
+            filterItems();
+        } else {
+            elements.cardsContainer.innerHTML = '';
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        showToast('error');
     }
 }
 
