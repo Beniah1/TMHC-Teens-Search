@@ -4,242 +4,133 @@ const supabase = window.supabase.createClient(
     "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpudXhhaGRxeGVuY3F0c3Z4dmphIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzc4MDQzNjUsImV4cCI6MjA1MzM4MDM2NX0.8evCXHMfkn1yhsVB8lQ62BL3b6-j4KZ_oszTuYLT6G0"
 );
 
-// DOM Elements
-const searchInput = document.getElementById('searchInput');
-const addButton = document.getElementById('addButton');
-const cardsContainer = document.getElementById('cardsContainer');
-const modal = document.getElementById('modal');
-const modalTitle = document.getElementById('modalTitle');
-const infoForm = document.getElementById('infoForm');
-const nameInput = document.getElementById('nameInput');
-const genderInput = document.getElementById('genderInput');
-const phoneInput = document.getElementById('phoneInput');
-const ageInput = document.getElementById('ageInput');
-const levelInput = document.getElementById('levelInput');
-const attendance5th = document.getElementById('attendance5th');
-const attendance12th = document.getElementById('attendance12th');
-const attendance19th = document.getElementById('attendance19th');
-const attendance26th = document.getElementById('attendance26th');
-const cancelButton = document.getElementById('cancelButton');
-const closeButton = document.getElementById('closeButton');
-const successToast = document.getElementById('successToast');
-const errorToast = document.getElementById('errorToast');
+// Cache DOM elements
+const elements = {
+    searchInput: document.getElementById('searchInput'),
+    addButton: document.getElementById('addButton'),
+    cardsContainer: document.getElementById('cardsContainer'),
+    modal: document.getElementById('modal'),
+    modalTitle: document.getElementById('modalTitle'),
+    infoForm: document.getElementById('infoForm'),
+    nameInput: document.getElementById('nameInput'),
+    genderInput: document.getElementById('genderInput'),
+    phoneInput: document.getElementById('phoneInput'),
+    ageInput: document.getElementById('ageInput'),
+    levelInput: document.getElementById('levelInput'),
+    attendance5th: document.getElementById('attendance5th'),
+    attendance12th: document.getElementById('attendance12th'),
+    attendance19th: document.getElementById('attendance19th'),
+    attendance26th: document.getElementById('attendance26th'),
+    cancelButton: document.getElementById('cancelButton'),
+    closeButton: document.getElementById('closeButton'),
+    successToast: document.getElementById('successToast'),
+    errorToast: document.getElementById('errorToast')
+};
 
 let editingId = null;
+let searchCache = new Map();
+let lastSearchTerm = '';
+let searchTimeout;
 
-// Debounce function
+// Optimized debounce function
 function debounce(func, wait) {
-    let timeout;
-    return function executedFunction(...args) {
-        const later = () => {
-            clearTimeout(timeout);
-            func(...args);
-        };
-        clearTimeout(timeout);
-        timeout = setTimeout(later, wait);
+    return function(...args) {
+        clearTimeout(searchTimeout);
+        searchTimeout = setTimeout(() => func.apply(this, args), wait);
     };
 }
 
-// Debounce function with shorter delay
-const debouncedFilter = debounce(filterItems, 150); // Reduced from 300ms to 150ms
+// Optimized event listeners with delegation
+elements.searchInput.addEventListener('input', debounce(filterItems, 100)); // Reduced to 100ms
+elements.addButton.addEventListener('click', () => showModal());
+elements.cancelButton.addEventListener('click', handleCloseClick);
+elements.closeButton.addEventListener('click', handleCloseClick);
+elements.infoForm.addEventListener('submit', handleSubmit);
+elements.modal.addEventListener('click', (e) => {
+    if (e.target === elements.modal) hideModal();
+});
 
-// Cache for search results
-let searchCache = new Map();
-
-// Event Listeners
-searchInput.addEventListener('input', debouncedFilter);
-addButton.addEventListener('click', () => showModal());
-cancelButton.addEventListener('click', (e) => {
+// Optimized close button handler
+function handleCloseClick(e) {
     addButtonPressAnimation(e.target);
-    setTimeout(hideModal, 100);
-});
-closeButton.addEventListener('click', (e) => {
-    addButtonPressAnimation(e.target);
-    setTimeout(hideModal, 100);
-});
-infoForm.addEventListener('submit', handleSubmit);
-
-// Close modal when clicking outside
-modal.addEventListener('click', (e) => {
-    if (e.target === modal) {
-        hideModal();
-    }
-});
-
-async function filterItems() {
-    const searchTerm = searchInput.value.toLowerCase().trim();
-    
-    if (!searchTerm) {
-        cardsContainer.innerHTML = '';
-        return;
-    }
-
-    // Check cache first
-    const cacheKey = searchTerm;
-    if (searchCache.has(cacheKey)) {
-        displayItems(searchCache.get(cacheKey));
-        return;
-    }
-
-    try {
-        let query = supabase
-            .from('csv_data_january')
-            .select('*')
-            .ilike('full_name', `%${searchTerm}%`);
-
-        const { data, error } = await query;
-        
-        if (error) {
-            console.error('Error fetching data:', error);
-            cardsContainer.innerHTML = '<p class="text-white text-center">Error fetching data</p>';
-            return;
-        }
-
-        if (data.length === 0) {
-            cardsContainer.innerHTML = '<p class="text-white text-center">No results found</p>';
-            return;
-        }
-
-        // Cache the results
-        searchCache.set(cacheKey, data);
-        // Limit cache size to prevent memory issues
-        if (searchCache.size > 100) {
-            const firstKey = searchCache.keys().next().value;
-            searchCache.delete(firstKey);
-        }
-
-        displayItems(data);
-    } catch (error) {
-        console.error('Error:', error);
-        cardsContainer.innerHTML = '<p class="text-white text-center">Error occurred</p>';
-    }
+    requestAnimationFrame(hideModal);
 }
 
-function showModal(item = null) {
-    editingId = item ? item.id : null;
-    modalTitle.textContent = item ? 'Edit Information' : 'Add New Information';
-
-    if (item) {
-        nameInput.value = item.full_name || '';
-        genderInput.value = item.gender || '';
-        phoneInput.value = item.phone_number || '';
-        ageInput.value = item.age || '';
-        levelInput.value = item.current_level || '';
-        attendance5th.value = item.attendance_5th || '';
-        attendance12th.value = item.attendance_12th || '';
-        attendance19th.value = item.attendance_19th || '';
-        attendance26th.value = item.attendance_26th || '';
-    } else {
-        infoForm.reset();
-    }
-
-    modal.style.display = 'block';
-    // Force reflow to trigger animation
-    modal.offsetHeight;
-    nameInput.focus();
-}
-
+// Optimized modal hide
 function hideModal() {
-    const modalElement = document.getElementById('modal');
-    modalElement.classList.add('closing');
+    elements.modal.classList.add('closing');
     setTimeout(() => {
-        modalElement.style.display = 'none';
-        modalElement.classList.remove('closing');
-        infoForm.reset();
+        elements.modal.style.display = 'none';
+        elements.modal.classList.remove('closing');
+        elements.infoForm.reset();
         editingId = null;
     }, 200);
 }
 
+// Optimized button animation
 function addButtonPressAnimation(button) {
-    button.classList.add('button-press');
-    setTimeout(() => button.classList.remove('button-press'), 200);
+    requestAnimationFrame(() => {
+        button.classList.add('button-press');
+        setTimeout(() => button.classList.remove('button-press'), 200);
+    });
 }
 
-async function handleSubmit(e) {
-    e.preventDefault();
+// Optimized search function
+async function filterItems() {
+    const searchTerm = elements.searchInput.value.toLowerCase().trim();
+    
+    if (!searchTerm) {
+        elements.cardsContainer.innerHTML = '';
+        return;
+    }
 
-    // Disable form submission while processing
-    const submitButton = e.target.querySelector('button[type="submit"]');
-    submitButton.disabled = true;
+    // Prevent duplicate searches
+    if (searchTerm === lastSearchTerm) return;
+    lastSearchTerm = searchTerm;
 
-    const formData = {
-        full_name: nameInput.value.trim(),
-        gender: genderInput.value,
-        phone_number: phoneInput.value.trim(),
-        age: parseInt(ageInput.value) || null,
-        current_level: levelInput.value,
-        attendance_5th: attendance5th.value,
-        attendance_12th: attendance12th.value,
-        attendance_19th: attendance19th.value,
-        attendance_26th: attendance26th.value
-    };
-
-    if (!formData.full_name) {
-        showToast('error');
-        nameInput.focus();
-        submitButton.disabled = false;
+    // Check cache first
+    if (searchCache.has(searchTerm)) {
+        requestAnimationFrame(() => displayItems(searchCache.get(searchTerm)));
         return;
     }
 
     try {
-        let error;
-        if (editingId) {
-            const { error: updateError } = await supabase
-                .from('csv_data_january')
-                .update(formData)
-                .eq('id', editingId);
-            error = updateError;
-        } else {
-            const { error: insertError } = await supabase
-                .from('csv_data_january')
-                .insert([formData]);
-            error = insertError;
-        }
+        const { data, error } = await supabase
+            .from('csv_data_january')
+            .select('*')
+            .ilike('full_name', `%${searchTerm}%`);
+        
+        if (error) throw error;
 
-        if (error) {
-            console.error('Error saving data:', error);
-            showToast('error');
-            submitButton.disabled = false;
+        if (!data || data.length === 0) {
+            elements.cardsContainer.innerHTML = '<p class="text-white text-center">No results found</p>';
             return;
         }
 
-        // Clear the cache since data has changed
-        searchCache.clear();
-        
-        showToast('success');
-        hideModal();
-        
-        // Only refresh the display if there's a search term
-        if (searchInput.value.trim()) {
-            filterItems();
+        // Cache results
+        searchCache.set(searchTerm, data);
+        if (searchCache.size > 50) { // Reduced cache size for better memory management
+            const firstKey = searchCache.keys().next().value;
+            searchCache.delete(firstKey);
         }
+
+        requestAnimationFrame(() => displayItems(data));
     } catch (error) {
         console.error('Error:', error);
-        showToast('error');
-    } finally {
-        submitButton.disabled = false;
+        elements.cardsContainer.innerHTML = '<p class="text-white text-center">Error occurred</p>';
     }
 }
 
-function getAttendanceDisplay(record) {
-    const attendanceDays = [
-        { date: '5th', value: record.attendance_5th },
-        { date: '12th', value: record.attendance_12th },
-        { date: '19th', value: record.attendance_19th },
-        { date: '26th', value: record.attendance_26th }
-    ];
-
-    return attendanceDays
-        .filter(day => day.value)
-        .map(day => `${day.date}: ${day.value}`)
-        .join(' | ');
-}
-
+// Optimized display function
 function displayItems(items) {
-    cardsContainer.innerHTML = items.map(item => {
+    const fragment = document.createDocumentFragment();
+    
+    items.forEach(item => {
+        const div = document.createElement('div');
+        div.className = 'result-item';
         const itemData = encodeURIComponent(JSON.stringify(item));
-        return `
-        <div class="result-item">
+        
+        div.innerHTML = `
             <h3>${escapeHtml(item.full_name)}</h3>
             <p>
                 <strong>Gender:</strong> ${escapeHtml(item.gender || 'N/A')}<br>
@@ -258,30 +149,98 @@ function displayItems(items) {
                     class="bg-red-500 hover:bg-red-600 text-white py-2 px-4 rounded text-sm">
                     Delete
                 </button>
-            </div>
-        </div>
-    `}).join('');
+            </div>`;
+        
+        fragment.appendChild(div);
+    });
+
+    elements.cardsContainer.innerHTML = '';
+    elements.cardsContainer.appendChild(fragment);
 }
 
-async function deleteItem(id) {
-    if (!confirm('Are you sure you want to delete this record?')) {
+async function showModal(item = null) {
+    editingId = item ? item.id : null;
+    elements.modalTitle.textContent = item ? 'Edit Information' : 'Add New Information';
+
+    if (item) {
+        elements.nameInput.value = item.full_name || '';
+        elements.genderInput.value = item.gender || '';
+        elements.phoneInput.value = item.phone_number || '';
+        elements.ageInput.value = item.age || '';
+        elements.levelInput.value = item.current_level || '';
+        elements.attendance5th.value = item.attendance_5th || '';
+        elements.attendance12th.value = item.attendance_12th || '';
+        elements.attendance19th.value = item.attendance_19th || '';
+        elements.attendance26th.value = item.attendance_26th || '';
+    } else {
+        elements.infoForm.reset();
+    }
+
+    elements.modal.style.display = 'block';
+    // Force reflow to trigger animation
+    elements.modal.offsetHeight;
+    elements.nameInput.focus();
+}
+
+// Optimized form submission
+async function handleSubmit(e) {
+    e.preventDefault();
+    const submitButton = e.target.querySelector('button[type="submit"]');
+    submitButton.disabled = true;
+
+    const formData = {
+        full_name: elements.nameInput.value.trim(),
+        gender: elements.genderInput.value,
+        phone_number: elements.phoneInput.value.trim(),
+        age: parseInt(elements.ageInput.value) || null,
+        current_level: elements.levelInput.value,
+        attendance_5th: elements.attendance5th.value,
+        attendance_12th: elements.attendance12th.value,
+        attendance_19th: elements.attendance19th.value,
+        attendance_26th: elements.attendance26th.value
+    };
+
+    if (!formData.full_name) {
+        showToast('error');
+        elements.nameInput.focus();
+        submitButton.disabled = false;
         return;
     }
 
-    const { error } = await supabase
-        .from('csv_data_january')
-        .delete()
-        .eq('id', id);
+    try {
+        const { error } = editingId
+            ? await supabase
+                .from('csv_data_january')
+                .update(formData)
+                .eq('id', editingId)
+            : await supabase
+                .from('csv_data_january')
+                .insert([formData]);
 
-    if (error) {
-        alert('Error deleting record: ' + error.message);
-        return;
-    }
+        if (error) throw error;
 
-    // Only refresh the display if there's a search term
-    if (searchInput.value.trim()) {
-        filterItems();
+        searchCache.clear();
+        showToast('success');
+        hideModal();
+        
+        if (elements.searchInput.value.trim()) {
+            filterItems();
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        showToast('error');
+    } finally {
+        submitButton.disabled = false;
     }
+}
+
+// Optimized toast display
+function showToast(type) {
+    const toast = type === 'success' ? elements.successToast : elements.errorToast;
+    requestAnimationFrame(() => {
+        toast.classList.add('show');
+        setTimeout(() => toast.classList.remove('show'), 3000);
+    });
 }
 
 // Helper function to escape HTML content
@@ -306,14 +265,42 @@ function editItem(itemData) {
     }
 }
 
-// Function to show toast notification
-function showToast(type) {
-    const toast = type === 'success' ? successToast : errorToast;
-    toast.classList.add('show');
-    setTimeout(() => {
-        toast.classList.remove('show');
-    }, 3000);
+// Function to get attendance display
+function getAttendanceDisplay(record) {
+    const attendanceDays = [
+        { date: '5th', value: record.attendance_5th },
+        { date: '12th', value: record.attendance_12th },
+        { date: '19th', value: record.attendance_19th },
+        { date: '26th', value: record.attendance_26th }
+    ];
+
+    return attendanceDays
+        .filter(day => day.value)
+        .map(day => `${day.date}: ${day.value}`)
+        .join(' | ');
+}
+
+// Function to delete item
+async function deleteItem(id) {
+    if (!confirm('Are you sure you want to delete this record?')) {
+        return;
+    }
+
+    const { error } = await supabase
+        .from('csv_data_january')
+        .delete()
+        .eq('id', id);
+
+    if (error) {
+        alert('Error deleting record: ' + error.message);
+        return;
+    }
+
+    // Only refresh the display if there's a search term
+    if (elements.searchInput.value.trim()) {
+        filterItems();
+    }
 }
 
 // Initialize with empty container
-cardsContainer.innerHTML = '';
+elements.cardsContainer.innerHTML = '';
