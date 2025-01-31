@@ -342,49 +342,19 @@
             }
         }
 
-        .close-button {
-            position: absolute;
-            top: 1.5rem;
-            right: 1.5rem;
-            width: 2.5rem;
-            height: 2.5rem;
-            border-radius: 50%;
-            background: #f1f1f1;
-            border: none;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.5rem;
-            color: #666;
-            transition: all 0.2s ease;
-            z-index: 10;
-        }
-
-        .close-button:hover {
-            background: #e0e0e0;
-            color: #333;
-            transform: rotate(90deg);
-        }
-
-        .form-group {
-            margin-bottom: 1.5rem;
-        }
-
         .form-actions {
             display: flex;
+            justify-content: flex-end;
             gap: 1rem;
             margin-top: 2rem;
-            padding-top: 1.5rem;
-            border-top: 1px solid #e5e7eb;
+            padding: 1rem;
+            background: white;
             position: sticky;
             bottom: 0;
-            background: white;
-            padding-bottom: 1rem;
         }
 
         .form-actions button {
-            flex: 1;
+            min-width: 120px;
             padding: 0.75rem 1.5rem;
             border-radius: 8px;
             font-weight: 600;
@@ -392,23 +362,58 @@
         }
 
         .cancel-button {
-            background: #ef4444;
+            background: linear-gradient(135deg, #ff4d4d, #dc2626);
             color: white;
             border: none;
         }
 
         .cancel-button:hover {
-            background: #dc2626;
+            background: linear-gradient(135deg, #dc2626, #b91c1c);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 6px rgba(220, 38, 38, 0.2);
         }
 
         .save-button {
-            background: #45a049;
+            background: linear-gradient(135deg, #45a049, #357d39);
             color: white;
             border: none;
         }
 
         .save-button:hover {
-            background: #357d39;
+            background: linear-gradient(135deg, #357d39, #245326);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 6px rgba(69, 160, 73, 0.2);
+        }
+
+        .close-button {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            width: 2.5rem;
+            height: 2.5rem;
+            border-radius: 50%;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #357d39, #245326);
+            color: white;
+            transition: all 0.3s ease;
+            z-index: 10;
+            padding: 0;
+        }
+
+        .close-button:hover {
+            background: linear-gradient(135deg, #1d451f, #ba0707);
+            transform: rotate(90deg);
+            box-shadow: 0 0 15px rgba(99, 102, 241, 0.3);
+        }
+
+        .close-button svg {
+            width: 1.25rem;
+            height: 1.25rem;
+            stroke-width: 2.5;
         }
     </style>
 </head>
@@ -448,9 +453,9 @@
     <!-- Modal -->
     <div id="modal" class="modal">
         <div class="modal-content">
-            <button id="closeButton" class="absolute top-4 right-4 text-gray-500 hover:text-gray-700">
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+            <button id="closeButton" class="close-button">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
                 </svg>
             </button>
             <h2 id="modalTitle" class="text-2xl font-bold mb-6">Add New Information</h2>
