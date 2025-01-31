@@ -211,10 +211,37 @@
             transition: all 0.3s ease;
         }
 
+        .add-button {
+            animation: scaleIn 0.5s ease-out;
+            transform-origin: center;
+        }
+
         .add-button:hover {
-            transform: scale(1.1);
+            transform: scale(1.15) rotate(90deg);
             background: linear-gradient(135deg, #357d39, #245326);
-            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes scaleIn {
+            from {
+                transform: scale(0.95);
+                opacity: 0;
+            }
+            to {
+                transform: scale(1);
+                opacity: 1;
+            }
         }
 
         .result-item {
@@ -223,11 +250,13 @@
             border-radius: 12px;
             margin-bottom: 15px;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            transition: transform 0.2s;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            animation: scaleIn 0.3s ease-out;
         }
 
         .result-item:hover {
-            transform: translateY(-2px);
+            transform: translateY(-4px) scale(1.01);
+            box-shadow: 0 8px 12px rgba(0, 0, 0, 0.15);
         }
 
         .result-item h3 {
@@ -247,6 +276,39 @@
             margin-bottom: 15px;
         }
 
+        /* Enhanced animations for search input */
+        #searchInput {
+            transform: translateY(0);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        #searchInput:focus {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 20px rgba(76, 175, 80, 0.25);
+        }
+
+        @keyframes modalFadeIn {
+            from {
+                background: rgba(0, 0, 0, 0);
+                backdrop-filter: blur(0px);
+            }
+            to {
+                background: rgba(0, 0, 0, 0.5);
+                backdrop-filter: blur(5px);
+            }
+        }
+
+        @keyframes modalContentSlideIn {
+            from {
+                opacity: 0;
+                transform: scale(0.95) translateY(-40px);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1) translateY(0);
+            }
+        }
+
         .modal {
             display: none;
             position: fixed;
@@ -257,6 +319,7 @@
             background: rgba(0, 0, 0, 0.5);
             backdrop-filter: blur(5px);
             z-index: 1000;
+            animation: modalFadeIn 0.3s ease-out;
         }
 
         .modal-content {
@@ -270,6 +333,8 @@
             max-height: 95vh;
             overflow-y: auto;
             position: relative;
+            animation: modalContentSlideIn 0.3s ease-out;
+            transform-origin: top;
         }
 
         @media (min-width: 640px) {

@@ -106,6 +106,8 @@ function showModal(item = null) {
     }
 
     modal.style.display = 'block';
+    // Force reflow to trigger animation
+    modal.offsetHeight;
     nameInput.focus();
 }
 
