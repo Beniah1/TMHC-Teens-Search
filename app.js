@@ -22,6 +22,8 @@ const attendance19th = document.getElementById('attendance19th');
 const attendance26th = document.getElementById('attendance26th');
 const cancelButton = document.getElementById('cancelButton');
 const closeButton = document.getElementById('closeButton');
+const successToast = document.getElementById('successToast');
+const errorToast = document.getElementById('errorToast');
 
 let editingId = null;
 
@@ -133,34 +135,41 @@ async function handleSubmit(e) {
     };
 
     if (!formData.full_name) {
-        alert('Please enter a name');
+        showToast('error');
         nameInput.focus();
         return;
     }
 
-    let error;
-    if (editingId) {
-        const { error: updateError } = await supabase
-            .from('csv_data_january')
-            .update(formData)
-            .eq('id', editingId);
-        error = updateError;
-    } else {
-        const { error: insertError } = await supabase
-            .from('csv_data_january')
-            .insert([formData]);
-        error = insertError;
-    }
+    try {
+        let error;
+        if (editingId) {
+            const { error: updateError } = await supabase
+                .from('csv_data_january')
+                .update(formData)
+                .eq('id', editingId);
+            error = updateError;
+        } else {
+            const { error: insertError } = await supabase
+                .from('csv_data_january')
+                .insert([formData]);
+            error = insertError;
+        }
 
-    if (error) {
-        alert('Error saving data: ' + error.message);
-        return;
-    }
+        if (error) {
+            console.error('Error saving data:', error);
+            showToast('error');
+            return;
+        }
 
-    hideModal();
-    // Only refresh the display if there's a search term
-    if (searchInput.value.trim()) {
-        filterItems();
+        showToast('success');
+        hideModal();
+        // Only refresh the display if there's a search term
+        if (searchInput.value.trim()) {
+            filterItems();
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        showToast('error');
     }
 }
 
@@ -247,6 +256,15 @@ function editItem(itemData) {
     } catch (error) {
         console.error('Error parsing item data:', error);
     }
+}
+
+// Function to show toast notification
+function showToast(type) {
+    const toast = type === 'success' ? successToast : errorToast;
+    toast.classList.add('show');
+    setTimeout(() => {
+        toast.classList.remove('show');
+    }, 3000);
 }
 
 // Initialize with empty container

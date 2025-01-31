@@ -415,6 +415,44 @@
             height: 1.25rem;
             stroke-width: 2.5;
         }
+
+        .toast {
+            position: fixed;
+            bottom: 2rem;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 1rem 2rem;
+            border-radius: 8px;
+            color: white;
+            font-weight: 500;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .toast.success {
+            background: linear-gradient(135deg, #45a049, #357d39);
+        }
+
+        .toast.error {
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+        }
+
+        .toast.show {
+            opacity: 1;
+            visibility: visible;
+            transform: translateX(-50%) translateY(0);
+        }
+
+        .toast svg {
+            width: 1.25rem;
+            height: 1.25rem;
+        }
     </style>
 </head>
 
@@ -448,6 +486,20 @@
 
         <!-- Add Button -->
         <button id="addButton" class="add-button">+</button>
+    </div>
+
+    <!-- Toast Notifications -->
+    <div id="successToast" class="toast success">
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+        </svg>
+        <span>Information saved successfully!</span>
+    </div>
+    <div id="errorToast" class="toast error">
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+        </svg>
+        <span>Failed to save information. Please try again.</span>
     </div>
 
     <!-- Modal -->
