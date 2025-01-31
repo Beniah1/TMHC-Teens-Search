@@ -285,13 +285,16 @@ select:focus {
     gap: 0.75rem;
     margin-top: 1.5rem;
     padding: 0.875rem;
-    background: rgba(44, 121, 46, 0.25);
+    background: rgba(44, 121, 46, 0.25); /* Semi-transparent green */
     border-radius: 12px;
     border: 1px solid rgba(255, 255, 255, 0.3);
     position: sticky;
     bottom: 0;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    backdrop-filter: blur(10px); /* Adds a blur effect */
+    -webkit-backdrop-filter: blur(10px); /* Ensures support for Safari */
 }
+
 
 @media (min-width: 640px) {
     .form-actions {
@@ -363,16 +366,26 @@ select:focus {
     position: absolute;
     top: 1rem;
     right: 1rem;
-    width: 2rem;
-    height: 2rem;
-    background: rgba(44, 121, 46, 0.25);
-    border-radius: 5px;
-    border: 1px solid rgba(255, 255, 255, 0.3);
+    width: 2.5rem; /* Slightly bigger for better interaction */
+    height: 2.5rem;
+    border-radius: 50%; /* Fully round */
+    background: linear-gradient(135deg, #45a049, #357d39) !important; /* Ensure it always has color */
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: background 0.3s ease, transform 0.2s ease;
 }
 
+/* Hover effect: changes gradient color */
 .close-button:hover {
-    background: rgba(232, 35, 35, 0.35);
-    border: 1px solid rgba(255, 255, 255, 0.4);
+    background: linear-gradient(135deg, rgb(250, 42, 42), #357d39) !important;
+    transform: scale(1.1);
+}
+
+.bg-w {
+    background-color: white !important;
 }
 
 @media (min-width: 640px) {
