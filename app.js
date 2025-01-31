@@ -6,8 +6,6 @@ const supabase = window.supabase.createClient(
 
 // DOM Elements
 const searchInput = document.getElementById('searchInput');
-const searchButton = document.getElementById('searchButton');
-const buttonText = searchButton.querySelector('.button-text');
 const addButton = document.getElementById('addButton');
 const cardsContainer = document.getElementById('cardsContainer');
 const modal = document.getElementById('modal');
@@ -27,13 +25,22 @@ const closeButton = document.getElementById('closeButton');
 
 let editingId = null;
 
+// Debounce function
+function debounce(func, wait) {
+    let timeout;
+    return function executedFunction(...args) {
+        const later = () => {
+            clearTimeout(timeout);
+            func(...args);
+        };
+        clearTimeout(timeout);
+        timeout = setTimeout(later, wait);
+    };
+}
+
 // Event Listeners
-searchButton.addEventListener('click', filterItems);
-searchInput.addEventListener('keypress', (e) => {
-    if (e.key === 'Enter') {
-        filterItems();
-    }
-});
+const debouncedFilter = debounce(filterItems, 300); // 300ms delay
+searchInput.addEventListener('input', debouncedFilter);
 addButton.addEventListener('click', () => showModal());
 cancelButton.addEventListener('click', hideModal);
 closeButton.addEventListener('click', hideModal);
@@ -46,20 +53,6 @@ modal.addEventListener('click', (e) => {
     }
 });
 
-function showLoading() {
-    searchButton.classList.add('loading');
-    buttonText.textContent = '';
-    searchButton.disabled = true;
-    searchInput.disabled = true;
-}
-
-function hideLoading() {
-    searchButton.classList.remove('loading');
-    buttonText.textContent = 'Search';
-    searchButton.disabled = false;
-    searchInput.disabled = false;
-}
-
 async function filterItems() {
     const searchTerm = searchInput.value.toLowerCase().trim();
     
@@ -67,8 +60,6 @@ async function filterItems() {
         cardsContainer.innerHTML = '';
         return;
     }
-
-    showLoading();
 
     try {
         let query = supabase
@@ -80,7 +71,7 @@ async function filterItems() {
         
         if (error) {
             console.error('Error fetching data:', error);
-            cardsContainer.innerHTML = '<p class="text-white text-center">Error fetching data. Please try again.</p>';
+            cardsContainer.innerHTML = '<p class="text-white text-center">Error fetching data</p>';
             return;
         }
 
@@ -92,9 +83,7 @@ async function filterItems() {
         displayItems(data);
     } catch (error) {
         console.error('Error:', error);
-        cardsContainer.innerHTML = '<p class="text-white text-center">An unexpected error occurred. Please try again.</p>';
-    } finally {
-        hideLoading();
+        cardsContainer.innerHTML = '<p class="text-white text-center">Error occurred</p>';
     }
 }
 
