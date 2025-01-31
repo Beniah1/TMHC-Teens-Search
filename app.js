@@ -64,7 +64,7 @@ async function filterItems() {
     const searchTerm = searchInput.value.toLowerCase().trim();
     
     if (!searchTerm) {
-        cardsContainer.innerHTML = '<p class="text-white text-center">Please enter a name to search</p>';
+        cardsContainer.innerHTML = '';
         return;
     }
 
@@ -258,5 +258,5 @@ function editItem(itemData) {
     }
 }
 
-// Initialize with empty container and a message
-cardsContainer.innerHTML = '<p class="text-white text-center">Enter a name and click search to find records</p>';
+// Initialize with empty container
+cardsContainer.innerHTML = '';
