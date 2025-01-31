@@ -276,3 +276,154 @@ function escapeHtml(unsafe) {
 // Function to handle edit button click
 function editItem(itemData) {
     try {
+        const item = JSON.parse(decodeURIComponent(itemData));
+        showModal(item);
+    } catch (error) {
+        console.error('Error parsing item data:', error);
+        showToast('error');
+    }
+}
+
+// Function to handle delete button click
+async function deleteItem(id) {
+    if (!confirm('Are you sure you want to delete this record?')) return;
+
+    try {
+        const { error } = await supabase
+            .from('csv_data_january')
+            .delete()
+            .eq('id', id);
+
+        if (error) throw error;
+
+        // Clear the cache since data has changed
+        searchCache.clear();
+        showToast('success');
+
+        // Refresh the display
+        const currentSearch = elements.searchInput.value.trim();
+        if (currentSearch) {
+            await filterItems();
+        } else {
+            await loadInitialData();
+        }
+
+        // Refresh the statistics
+        await fetchAndDisplayStats();
+    } catch (error) {
+        console.error('Error deleting record:', error);
+        showToast('error');
+    }
+}
+
+// Function to get attendance display
+function getAttendanceDisplay(item) {
+    const dates = ['5th', '12th', '19th', '26th'];
+    return dates.map(date => {
+        const value = item[`attendance_${date}`];
+        return `<div class="attendance-item">
+            <span>${date}:</span>
+            <span class="attendance-value ${value?.toLowerCase() === 'present' ? 'present' : 'absent'}">
+                ${escapeHtml(value || 'N/A')}
+            </span>
+        </div>`;
+    }).join('');
+}
+
+// Function to load initial data
+async function loadInitialData() {
+    try {
+        const { data, error } = await supabase
+            .from('csv_data_january')
+            .select('*')
+            .order('full_name');
+
+        if (error) throw error;
+        displayItems(data || []);
+        await fetchAndDisplayStats();
+    } catch (error) {
+        console.error('Error loading data:', error);
+        elements.cardsContainer.innerHTML = '<p class="error-message">Error loading records</p>';
+    }
+}
+
+// Function to fetch and display statistics
+async function fetchAndDisplayStats() {
+    try {
+        const { data, error } = await supabase
+            .from('csv_data_january')
+            .select('*');
+
+        if (error) throw error;
+
+        // Update total count
+        document.getElementById('totalPeople').textContent = data.length;
+
+        // Update gender counts
+        const genderCounts = data.reduce((acc, item) => {
+            const gender = item.gender?.toLowerCase() || '';
+            if (gender === 'male') acc.boys++;
+            if (gender === 'female') acc.girls++;
+            return acc;
+        }, { boys: 0, girls: 0 });
+
+        document.getElementById('totalBoys').textContent = genderCounts.boys;
+        document.getElementById('totalGirls').textContent = genderCounts.girls;
+
+        // Define the order of levels
+        const levelOrder = [
+            'SHS1', 'SHS2', 'SHS3',
+            'JHS1', 'JHS2', 'JHS3',
+            'COMPLETED', 'UNIVERSITY'
+        ];
+
+        // Initialize counts for all levels
+        const levelCounts = levelOrder.reduce((acc, level) => {
+            acc[level] = 0;
+            return acc;
+        }, {});
+
+        // Count students in each level
+        data.forEach(item => {
+            const level = item.current_level?.toUpperCase() || 'UNKNOWN';
+            if (levelCounts.hasOwnProperty(level)) {
+                levelCounts[level]++;
+            }
+        });
+
+        // Generate HTML for level stats in the specified order
+        const levelStatsHtml = levelOrder
+            .map(level => {
+                const count = levelCounts[level];
+                return `
+                    <div class="level-stat">
+                        <span class="level-name">${level}</span>
+                        <span class="level-count">${count}</span>
+                    </div>`;
+            })
+            .join('');
+
+        document.getElementById('levelStats').innerHTML = levelStatsHtml;
+    } catch (error) {
+        console.error('Error fetching stats:', error);
+    }
+}
+
+// Load initial data when page loads
+document.addEventListener('DOMContentLoaded', () => {
+    loadInitialData();
+});
+
+// Function to toggle stat content
+function toggleStatContent(header) {
+    const content = header.nextElementSibling;
+    const arrow = header.querySelector('.toggle-arrow');
+    
+    if (content.style.maxHeight) {
+        content.style.maxHeight = null;
+        arrow.textContent = '▼';
+    } else {
+        content.style.maxHeight = content.scrollHeight + "px";
+        arrow.textContent = '▲';
+    }
+}
