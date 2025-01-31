@@ -19,6 +19,57 @@
             100% { background-position: 0% 50%; }
         }
 
+        @keyframes spinner {
+            0% { transform: translate(-50%, -50%) rotate(0deg); }
+            100% { transform: translate(-50%, -50%) rotate(360deg); }
+        }
+
+        .spinner {
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            width: 24px;
+            height: 24px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spinner 0.8s ease infinite;
+            display: none;
+            z-index: 2;
+        }
+
+        .search-button {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .search-button.loading {
+            cursor: not-allowed;
+        }
+
+        .search-button.loading .button-text {
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.2s ease;
+        }
+
+        .search-button.loading .spinner {
+            display: block;
+        }
+
+        .search-button.loading::after {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #45a049, #357d39);
+            border-radius: 10px;
+            opacity: 0.9;
+            z-index: 1;
+        }
+
         body {
             font-family: Arial, sans-serif;
             line-height: 1.6;
@@ -47,17 +98,29 @@
         input[type="text"], input[type="number"], select {
             width: 100%;
             padding: 15px;
-            border: 1px solid rgba(255, 255, 255, 0.3);
+            border: 2px solid #4caf50;
             border-radius: 10px;
             font-size: 16px;
             background: rgba(255, 255, 255, 0.9);
             transition: all 0.3s ease;
+            box-shadow: 0 0 0 2px rgba(76, 175, 80, 0.1);
+        }
+
+        /* Special style for the search input only */
+        .search-section input[type="text"] {
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            box-shadow: none;
+        }
+
+        .search-section input[type="text"]:focus {
+            border-color: #4caf50;
+            box-shadow: 0 0 0 2px rgba(76, 175, 80, 0.2);
         }
 
         input:focus, select:focus {
-            outline: none;
-            border-color: #4caf50;
-            box-shadow: 0 0 0 2px rgba(76, 175, 80, 0.2);
+            border-color: #357d39;
+            box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.2);
+            transform: translateY(-1px);
         }
 
         .search-button {
@@ -69,11 +132,18 @@
             cursor: pointer;
             font-size: 16px;
             font-weight: 600;
-            transition: transform 0.2s, box-shadow 0.2s;
+            transition: all 0.3s ease;
             min-width: 120px;
+            position: relative;
         }
 
-        .search-button:hover {
+        .button-text {
+            position: relative;
+            z-index: 2;
+            transition: opacity 0.2s ease;
+        }
+
+        .search-button:not(.loading):hover {
             transform: translateY(-2px);
             box-shadow: 0 4px 15px rgba(69, 160, 73, 0.3);
             background: linear-gradient(135deg, #357d39, #245326);
@@ -209,6 +279,10 @@
             gap: 15px;
             margin-top: 10px;
         }
+
+        #modal select, #modal input {
+            background: rgba(76, 175, 80, 0.05);
+        }
     </style>
 </head>
 <body>
@@ -217,7 +291,10 @@
         <div class="search-section">
             <div class="flex items-center gap-4">
                 <input type="text" id="searchInput" placeholder="Search names...">
-                <button id="searchButton" class="search-button">Search</button>
+                <button id="searchButton" class="search-button">
+                    <span class="button-text">Search</span>
+                    <div class="spinner"></div>
+                </button>
             </div>
         </div>
 

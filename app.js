@@ -7,6 +7,7 @@ const supabase = window.supabase.createClient(
 // DOM Elements
 const searchInput = document.getElementById('searchInput');
 const searchButton = document.getElementById('searchButton');
+const buttonText = searchButton.querySelector('.button-text');
 const addButton = document.getElementById('addButton');
 const cardsContainer = document.getElementById('cardsContainer');
 const modal = document.getElementById('modal');
@@ -45,6 +46,20 @@ modal.addEventListener('click', (e) => {
     }
 });
 
+function showLoading() {
+    searchButton.classList.add('loading');
+    buttonText.textContent = '';
+    searchButton.disabled = true;
+    searchInput.disabled = true;
+}
+
+function hideLoading() {
+    searchButton.classList.remove('loading');
+    buttonText.textContent = 'Search';
+    searchButton.disabled = false;
+    searchInput.disabled = false;
+}
+
 async function filterItems() {
     const searchTerm = searchInput.value.toLowerCase().trim();
     
@@ -53,24 +68,34 @@ async function filterItems() {
         return;
     }
 
-    let query = supabase
-        .from('csv_data_january')
-        .select('*')
-        .ilike('full_name', `%${searchTerm}%`);
+    showLoading();
 
-    const { data, error } = await query;
-    
-    if (error) {
-        console.error('Error fetching data:', error);
-        return;
+    try {
+        let query = supabase
+            .from('csv_data_january')
+            .select('*')
+            .ilike('full_name', `%${searchTerm}%`);
+
+        const { data, error } = await query;
+        
+        if (error) {
+            console.error('Error fetching data:', error);
+            cardsContainer.innerHTML = '<p class="text-white text-center">Error fetching data. Please try again.</p>';
+            return;
+        }
+
+        if (data.length === 0) {
+            cardsContainer.innerHTML = '<p class="text-white text-center">No results found</p>';
+            return;
+        }
+
+        displayItems(data);
+    } catch (error) {
+        console.error('Error:', error);
+        cardsContainer.innerHTML = '<p class="text-white text-center">An unexpected error occurred. Please try again.</p>';
+    } finally {
+        hideLoading();
     }
-
-    if (data.length === 0) {
-        cardsContainer.innerHTML = '<p class="text-white text-center">No results found</p>';
-        return;
-    }
-
-    displayItems(data);
 }
 
 function showModal(item = null) {
@@ -163,29 +188,31 @@ function getAttendanceDisplay(record) {
 }
 
 function displayItems(items) {
-    cardsContainer.innerHTML = items.map(item => `
+    cardsContainer.innerHTML = items.map(item => {
+        const itemData = encodeURIComponent(JSON.stringify(item));
+        return `
         <div class="result-item">
-            <h3>${item.full_name}</h3>
+            <h3>${escapeHtml(item.full_name)}</h3>
             <p>
-                <strong>Gender:</strong> ${item.gender || 'N/A'}<br>
+                <strong>Gender:</strong> ${escapeHtml(item.gender || 'N/A')}<br>
                 <strong>Age:</strong> ${item.age || 'N/A'}<br>
-                <strong>Phone:</strong> ${item.phone_number || 'N/A'}<br>
-                <strong>Level:</strong> ${item.current_level || 'N/A'}<br>
+                <strong>Phone:</strong> ${escapeHtml(item.phone_number || 'N/A')}<br>
+                <strong>Level:</strong> ${escapeHtml(item.current_level || 'N/A')}<br>
                 <strong>Attendance:</strong><br>
                 ${getAttendanceDisplay(item) || 'No attendance recorded'}
             </p>
             <div class="flex gap-3">
-                <button onclick='showModal(${JSON.stringify(item)})' 
+                <button onclick="editItem('${itemData}')"
                     class="search-button py-2 px-4 text-sm">
                     Edit
                 </button>
-                <button onclick='deleteItem(${item.id})' 
+                <button onclick="deleteItem(${item.id})"
                     class="bg-red-500 hover:bg-red-600 text-white py-2 px-4 rounded text-sm">
                     Delete
                 </button>
             </div>
         </div>
-    `).join('');
+    `}).join('');
 }
 
 async function deleteItem(id) {
@@ -206,6 +233,28 @@ async function deleteItem(id) {
     // Only refresh the display if there's a search term
     if (searchInput.value.trim()) {
         filterItems();
+    }
+}
+
+// Helper function to escape HTML content
+function escapeHtml(unsafe) {
+    if (unsafe == null) return '';
+    return unsafe
+        .toString()
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+}
+
+// Function to handle edit button click
+function editItem(itemData) {
+    try {
+        const item = JSON.parse(decodeURIComponent(itemData));
+        showModal(item);
+    } catch (error) {
+        console.error('Error parsing item data:', error);
     }
 }
 
