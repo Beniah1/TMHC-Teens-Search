@@ -80,13 +80,10 @@ async function filterItems() {
     const searchTerm = elements.searchInput.value.toLowerCase().trim();
     
     if (!searchTerm) {
-        elements.cardsContainer.innerHTML = '';
+        // If search is cleared, load all data
+        await loadInitialData();
         return;
     }
-
-    // Prevent duplicate searches
-    if (searchTerm === lastSearchTerm) return;
-    lastSearchTerm = searchTerm;
 
     // Check cache first
     if (searchCache.has(searchTerm)) {
@@ -99,25 +96,15 @@ async function filterItems() {
             .from('csv_data_january')
             .select('*')
             .ilike('full_name', `%${searchTerm}%`);
-        
+
         if (error) throw error;
 
-        if (!data || data.length === 0) {
-            elements.cardsContainer.innerHTML = '<p class="text-white text-center">No results found</p>';
-            return;
-        }
-
-        // Cache results
-        searchCache.set(searchTerm, data);
-        if (searchCache.size > 50) { // Reduced cache size for better memory management
-            const firstKey = searchCache.keys().next().value;
-            searchCache.delete(firstKey);
-        }
-
-        requestAnimationFrame(() => displayItems(data));
+        // Cache the results
+        searchCache.set(searchTerm, data || []);
+        displayItems(data || []);
     } catch (error) {
-        console.error('Error:', error);
-        elements.cardsContainer.innerHTML = '<p class="text-white text-center">Error occurred</p>';
+        console.error('Error searching:', error);
+        elements.cardsContainer.innerHTML = '<p class="error-message">Error searching records</p>';
     }
 }
 
@@ -136,11 +123,13 @@ function displayItems(items) {
                 <strong>Gender:</strong> ${escapeHtml(item.gender || 'N/A')}<br>
                 <strong>Age:</strong> ${item.age || 'N/A'}<br>
                 <strong>Phone:</strong> ${escapeHtml(item.phone_number || 'N/A')}<br>
-                <strong>Level:</strong> ${escapeHtml(item.current_level || 'N/A')}<br>
-                <strong>Attendance:</strong><br>
-                ${getAttendanceDisplay(item) || 'No attendance recorded'}
+                <strong>Level:</strong> ${escapeHtml(item.current_level || 'N/A')}
             </p>
-            <div class="flex gap-3">
+            <div class="attendance-section">
+                <strong>Attendance:</strong><br>
+                ${getAttendanceDisplay(item)}
+            </div>
+            <div class="flex gap-3 mt-3">
                 <button onclick="editItem('${itemData}')"
                     class="search-button py-2 px-4 text-sm">
                     Edit
@@ -154,8 +143,10 @@ function displayItems(items) {
         fragment.appendChild(div);
     });
 
-    elements.cardsContainer.innerHTML = '';
-    elements.cardsContainer.appendChild(fragment);
+    requestAnimationFrame(() => {
+        elements.cardsContainer.innerHTML = '';
+        elements.cardsContainer.appendChild(fragment);
+    });
 }
 
 // Function to show modal for adding/editing
@@ -229,10 +220,30 @@ async function handleSubmit(e) {
         showToast('success');
         hideModal();
         
-        // Refresh the current search results
-        if (elements.searchInput.value.trim()) {
-            filterItems();
+        // Force refresh the display regardless of search state
+        const currentSearch = elements.searchInput.value.trim();
+        if (currentSearch) {
+            // If there's a search term, refresh the search results
+            await filterItems();
+        } else {
+            // If no search term, clear the display
+            elements.cardsContainer.innerHTML = '';
+            // Fetch and display the edited record
+            if (editingId) {
+                const { data, error } = await supabase
+                    .from('csv_data_january')
+                    .select('*')
+                    .eq('id', editingId)
+                    .single();
+                
+                if (!error && data) {
+                    displayItems([data]);
+                }
+            }
         }
+
+        // Refresh the statistics after saving
+        await fetchAndDisplayStats();
     } catch (error) {
         console.error('Error:', error);
         showToast('error');
@@ -265,61 +276,3 @@ function escapeHtml(unsafe) {
 // Function to handle edit button click
 function editItem(itemData) {
     try {
-        const item = JSON.parse(decodeURIComponent(itemData));
-        showModal(item);
-    } catch (error) {
-        console.error('Error parsing item data:', error);
-    }
-}
-
-// Function to get attendance display
-function getAttendanceDisplay(record) {
-    const attendanceDays = [
-        { date: '5th', value: record.attendance_5th },
-        { date: '12th', value: record.attendance_12th },
-        { date: '19th', value: record.attendance_19th },
-        { date: '26th', value: record.attendance_26th }
-    ];
-
-    return attendanceDays
-        .filter(day => day.value)
-        .map(day => `${day.date}: ${day.value}`)
-        .join(' | ');
-}
-
-// Function to delete item
-async function deleteItem(id) {
-    if (!confirm('Are you sure you want to delete this record?')) {
-        return;
-    }
-
-    try {
-        const { error } = await supabase
-            .from('csv_data_january')
-            .delete()
-            .eq('id', id);
-
-        if (error) {
-            console.error('Error deleting record:', error);
-            showToast('error');
-            return;
-        }
-
-        showToast('success');
-        // Clear the cache since data has changed
-        searchCache.clear();
-        
-        // Refresh the current search results
-        if (elements.searchInput.value.trim()) {
-            filterItems();
-        } else {
-            elements.cardsContainer.innerHTML = '';
-        }
-    } catch (error) {
-        console.error('Error:', error);
-        showToast('error');
-    }
-}
-
-// Initialize with empty container
-elements.cardsContainer.innerHTML = '';

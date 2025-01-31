@@ -8,7 +8,6 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="style.css">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    
 </head>
 
 <body>
@@ -24,6 +23,54 @@
                 </ul>
             </div>
         </div>
+
+        <!-- Stats Container -->
+        <div class="stats-container">
+            <div class="stats-outer-container">
+                <div class="stats-grid">
+                    <!-- Overall Total -->
+                    <div class="stat-card gradient-card">
+                        <div class="stat-header" onclick="toggleStatContent(this)">
+                            <h3>Overall Total</h3>
+                            <span class="toggle-arrow">▼</span>
+                        </div>
+                        <div class="stat-content">
+                            <div class="stat-details">
+                                <p>Total People: <span id="totalPeople">0</span></p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Total Boys and Girls -->
+                    <div class="stat-card gradient-card">
+                        <div class="stat-header" onclick="toggleStatContent(this)">
+                            <h3>Total Boys and Girls</h3>
+                            <span class="toggle-arrow">▼</span>
+                        </div>
+                        <div class="stat-content">
+                            <div class="stat-details">
+                                <p>Boys: <span id="totalBoys">0</span></p>
+                                <p>Girls: <span id="totalGirls">0</span></p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Total People by Level -->
+                    <div class="stat-card gradient-card">
+                        <div class="stat-header" onclick="toggleStatContent(this)">
+                            <h3>Total by Level</h3>
+                            <span class="toggle-arrow">▼</span>
+                        </div>
+                        <div class="stat-content">
+                            <div class="stat-details" id="levelStats">
+                                <!-- Levels will be dynamically added here -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <!-- Search Section -->
         <div class="search-section">
             <div class="w-full max-w-2xl mx-auto">
