@@ -193,28 +193,34 @@ function displayItems(items) {
 // Optimize item HTML generation
 function getItemHTML(item, itemData) {
   return `
-        <h3>${escapeHtml(item.full_name)}</h3>
-        <p>
-            <strong>Gender:</strong> ${escapeHtml(item.gender || "N/A")}<br>
-            <strong>Age:</strong> ${item.age || "N/A"}<br>
-            <strong>Phone:</strong> ${escapeHtml(
-              item.phone_number || "N/A"
-            )}<br>
-            <strong>Level:</strong> ${escapeHtml(item.current_level || "N/A")}
-        </p>
-        <div class="attendance-section">
-            <strong>Attendance:</strong><br>
-            ${getAttendanceDisplay(item)}
-        </div>
-        <div class="flex gap-3 mt-3">
-            <button onclick="editItem('${itemData}')"
-                class="search-button py-2 px-4 text-sm">
-                Edit
-            </button>
-            <button onclick="deleteItem(${item.id})"
-                class="bg-red-500 hover:bg-red-600 text-white py-2 px-4 rounded text-sm">
-                Delete
-            </button>
+        <div class="result-item">
+            <h3>
+                ${escapeHtml(item.full_name)}
+                <div class="button-container">
+                    <button onclick="editItem('${itemData}')" class="search-button py-2 px-4 text-sm">
+                        Edit
+                    </button>
+                    <button onclick="deleteItem(${
+                      item.id
+                    })" class="bg-red-500 hover:bg-red-600 text-white py-2 px-4 rounded text-sm">
+                        Delete
+                    </button>
+                </div>
+            </h3>
+            <p>
+                <strong>Gender:</strong> ${escapeHtml(item.gender || "N/A")}<br>
+                <strong>Age:</strong> ${item.age || "N/A"}<br>
+                <strong>Phone:</strong> ${escapeHtml(
+                  item.phone_number || "N/A"
+                )}<br>
+                <strong>Level:</strong> ${escapeHtml(
+                  item.current_level || "N/A"
+                )}
+            </p>
+            <div class="attendance-section">
+                <strong>Attendance:</strong><br>
+                ${getAttendanceDisplay(item)}
+            </div>
         </div>`;
 }
 
@@ -284,11 +290,12 @@ async function handleSubmit(e) {
     if (error) throw error;
 
     // Show success message
-    const toast = document.getElementById('successToast');
+    const toast = document.getElementById("successToast");
     if (toast) {
-      toast.querySelector('span').textContent = 'Information saved successfully';
-      toast.classList.add('show');
-      setTimeout(() => toast.classList.remove('show'), 3000);
+      toast.querySelector("span").textContent =
+        "Information saved successfully";
+      toast.classList.add("show");
+      setTimeout(() => toast.classList.remove("show"), 3000);
     }
 
     // Clear cache and update display
