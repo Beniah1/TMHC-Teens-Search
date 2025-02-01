@@ -1618,40 +1618,37 @@ body.theme-admin .search-section input[type="text"]::placeholder {
 /* Update container width and padding for mobile */
 @media (max-width: 640px) {
   .container {
-    padding: 1rem 0;
+    padding: 1rem 0.5rem;
     width: 100%;
   }
 
   #cardsContainer {
-    padding: 0.75rem;
-    padding-top: 1rem;
+    padding: 0 0.75rem;
   }
 
   /* Add space at the top */
   .search-section {
-    padding: 0.75rem;
-    margin: 0.75rem 0.75rem 1rem 0.75rem;
+    padding: 1rem;
+    margin: 0.5rem 0.75rem 1rem;
+    border-radius: 8px;
   }
 
-  /* Title section spacing */
   .search-section h1 {
-    margin-top: 0.5rem;
+    font-size: 1.5rem;
     margin-bottom: 1rem;
   }
 
   .result-item {
     width: 100%;
-    padding: 1rem;
+    padding: 0.75rem;
     margin: 0 0 1rem 0;
     border-radius: 8px;
   }
 
   /* Stats container spacing */
   .stats-container {
-    margin-top: 1rem;
-    margin-bottom: 1.5rem;
-    margin-left: 0.75rem;
-    margin-right: 0.75rem;
+    margin: 1rem 0.75rem;
+    padding: 0.75rem;
   }
 }
 
@@ -1678,5 +1675,182 @@ body.theme-admin .search-section input[type="text"]::placeholder {
   .container {
     max-width: 90%;
     margin: 0 auto;
+  }
+}
+
+/* Mobile-first base styles */
+@media (max-width: 640px) {
+  /* Container and layout */
+  .container {
+    padding: 1rem 0.5rem;
+    width: 100%;
+  }
+
+  /* Title and search area */
+  .search-section {
+    padding: 1rem;
+    margin: 0.5rem 0.75rem 1rem;
+    border-radius: 8px;
+  }
+
+  .search-section h1 {
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+  }
+
+  /* Search input */
+  .search-section input[type="text"] {
+    padding: 0.875rem;
+    font-size: 0.95rem;
+  }
+
+  /* Stats container */
+  .stats-container {
+    margin: 1rem 0.75rem;
+    padding: 0.75rem;
+  }
+
+  .stats-grid {
+    gap: 0.75rem;
+  }
+
+  .stat-card {
+    margin-bottom: 0.5rem;
+  }
+
+  /* Category filter */
+  .category-filter {
+    margin: 0.75rem;
+    padding: 0.75rem;
+  }
+
+  .filter-container {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .filter-container select,
+  .download-button {
+    width: 100%;
+    padding: 0.75rem;
+  }
+
+  /* Cards container */
+  #cardsContainer {
+    padding: 0 0.75rem;
+  }
+
+  /* Result items */
+  .result-item {
+    padding: 0.75rem;
+    margin-bottom: 1rem;
+  }
+
+  .result-item h3 {
+    padding: 0.75rem;
+    margin-bottom: 0.75rem;
+  }
+
+  /* Button container */
+  .button-container {
+    padding: 0.25rem;
+    gap: 0.5rem;
+  }
+
+  .button-container button {
+    padding: 0.5rem;
+    font-size: 0.875rem;
+  }
+
+  /* Info sections */
+  .result-item p {
+    padding: 0.75rem;
+    font-size: 0.9rem;
+    line-height: 1.5;
+  }
+
+  /* Attendance section */
+  .attendance-section {
+    padding: 0.75rem;
+  }
+
+  .attendance-item {
+    padding: 0.5rem 0;
+    font-size: 0.9rem;
+  }
+
+  /* Theme switcher */
+  .theme-switcher {
+    bottom: 5rem;
+    transform: scale(0.9);
+  }
+
+  /* Fixed buttons */
+  .fixed-buttons {
+    bottom: 1rem;
+    right: 1rem;
+  }
+
+  .add-button {
+    width: 45px;
+    height: 45px;
+    font-size: 1.25rem;
+  }
+
+  /* Modal adjustments */
+  .modal-content {
+    width: 95%;
+    padding: 1rem;
+    margin: 1rem auto;
+  }
+
+  .form-group {
+    margin-bottom: 0.75rem;
+  }
+
+  .form-group label {
+    font-size: 0.9rem;
+    margin-bottom: 0.25rem;
+  }
+
+  .form-group input,
+  .form-group select {
+    padding: 0.625rem;
+    font-size: 0.9rem;
+  }
+}
+
+/* Larger phones and small tablets */
+@media (min-width: 400px) and (max-width: 640px) {
+  .container {
+    padding: 1rem;
+  }
+
+  .search-section,
+  .stats-container,
+  .category-filter {
+    margin: 1rem;
+  }
+
+  .result-item {
+    padding: 1rem;
+  }
+}
+
+/* Ensure smooth transitions between screen sizes */
+@media (min-width: 641px) {
+  .container {
+    max-width: 90%;
+    margin: 0 auto;
+    padding: 2rem;
+  }
+
+  .filter-container {
+    flex-direction: row;
+    align-items: center;
+  }
+
+  .filter-container select {
+    max-width: 200px;
   }
 }
