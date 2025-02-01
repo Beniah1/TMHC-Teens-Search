@@ -16,6 +16,14 @@ node_modules/
 .DS_Store
 Thumbs.db
 
+# Build files
+dist/
+build/
+
+# Logs
+*.log
+npm-debug.log*
+
 # === HOW TO UPDATE TMHT TEENS SEARCH APP ===
 
 # STEP 1: DATABASE
@@ -77,3 +85,6 @@ Please provide specific code changes for:
 
 Important: Keep all other functionality (search, add, edit, delete) working the same way.
 """
+
+# Password (Note: Not recommended for production)
+# TMHT Password: TMHT
