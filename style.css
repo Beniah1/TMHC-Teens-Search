@@ -1329,3 +1329,98 @@ body.theme-blue .level-count {
     transform: translateX(-50%) scale(0.85);
   }
 }
+
+/* Theme-specific colors for text and toasts */
+/* Green Theme (Default) */
+body.theme-green .text-[#357d39],
+body.theme-green input::placeholder,
+body.theme-green .search-section input[type="text"] {
+  color: #357d39;
+}
+
+body.theme-green .toast.success {
+  background: linear-gradient(135deg, #45a049, #357d39);
+}
+
+body.theme-green .toast.error {
+  background: linear-gradient(135deg, #dc2626, #b91c1c);
+}
+
+/* Purple Theme */
+body.theme-purple .text-[#357d39],
+body.theme-purple input::placeholder,
+body.theme-purple .search-section input[type="text"] {
+  color: #800080;
+}
+
+body.theme-purple .toast.success {
+  background: linear-gradient(135deg, #800080, #4a0080);
+}
+
+body.theme-purple .toast.error {
+  background: linear-gradient(135deg, #ef4444, #dc2626);
+}
+
+/* Blue Theme */
+body.theme-blue .text-[#357d39],
+body.theme-blue input::placeholder,
+body.theme-blue .search-section input[type="text"] {
+  color: #1e3a8a;
+}
+
+body.theme-blue .toast.success {
+  background: linear-gradient(135deg, #1e3a8a, #1e40af);
+}
+
+body.theme-blue .toast.error {
+  background: linear-gradient(135deg, #991b1b, #7f1d1d);
+}
+
+/* Update input focus colors for each theme */
+body.theme-green .search-section input[type="text"]:focus {
+  border-color: #45a049;
+}
+
+body.theme-purple .search-section input[type="text"]:focus {
+  border-color: #800080;
+}
+
+body.theme-blue .search-section input[type="text"]:focus {
+  border-color: #1e3a8a;
+}
+
+/* Update toast animations for each theme */
+.toast {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.toast.show {
+  transform: translate(-50%, -20px) scale(1);
+}
+
+/* Update instruction text colors */
+body.theme-green .bg-white\/90 h2 {
+  color: #357d39;
+}
+
+body.theme-purple .bg-white\/90 h2 {
+  color: #800080;
+}
+
+body.theme-blue .bg-white\/90 h2 {
+  color: #1e3a8a;
+}
+
+/* Update search placeholder text */
+body.theme-green input::placeholder {
+  color: rgba(53, 125, 57, 0.8);
+}
+
+body.theme-purple input::placeholder {
+  color: rgba(128, 0, 128, 0.8);
+}
+
+body.theme-blue input::placeholder {
+  color: rgba(30, 58, 138, 0.8);
+}
