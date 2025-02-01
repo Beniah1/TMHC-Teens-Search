@@ -1424,3 +1424,43 @@ body.theme-purple input::placeholder {
 body.theme-blue input::placeholder {
   color: rgba(30, 58, 138, 0.8);
 }
+
+/* Admin Theme Preview */
+.admin-theme .theme-preview {
+  background: linear-gradient(135deg, #dc2626, #991b1b);
+}
+
+.theme-switcher {
+  width: 160px; /* Increased to accommodate 4 buttons */
+}
+
+/* Admin button specific styles */
+.admin-theme {
+  position: relative;
+}
+
+.admin-theme::after {
+  content: "🔒";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 10px;
+  opacity: 0.7;
+}
+
+.admin-theme.active::after {
+  content: "🔓";
+}
+
+/* Animation for admin sections */
+.admin-sections {
+  transition: all 0.3s ease;
+  opacity: 0;
+  transform: translateY(-10px);
+}
+
+.admin-sections.visible {
+  opacity: 1;
+  transform: translateY(0);
+}

@@ -564,6 +564,10 @@ function initializeThemeSwitcher() {
   const greenTheme = document.querySelector(".green-theme");
   const purpleTheme = document.querySelector(".purple-theme");
   const blueTheme = document.querySelector(".blue-theme");
+  const adminTheme = document.querySelector(".admin-theme");
+
+  // Initialize admin features
+  adminFeatures.init();
 
   // Load saved theme or default to green
   const savedTheme = localStorage.getItem("selectedTheme") || "theme-green";
@@ -573,29 +577,20 @@ function initializeThemeSwitcher() {
   );
   if (activeButton) activeButton.classList.add("active");
 
-  // Toggle expanded state on click
-  themeSwitcher.addEventListener("click", () => {
-    themeSwitcher.classList.toggle("expanded");
-  });
-
-  // Close theme switcher when clicking outside
-  document.addEventListener("click", (e) => {
-    if (!themeSwitcher.contains(e.target)) {
-      themeSwitcher.classList.remove("expanded");
-    }
-  });
-
   function setTheme(themeName, button) {
     document.body.className = themeName;
     localStorage.setItem("selectedTheme", themeName);
-    [greenTheme, purpleTheme, blueTheme].forEach((btn) =>
+    [greenTheme, purpleTheme, blueTheme, adminTheme].forEach((btn) =>
       btn.classList.remove("active")
     );
     button.classList.add("active");
-    // Close the switcher after selection
-    setTimeout(() => {
-      themeSwitcher.classList.remove("expanded");
-    }, 300);
+
+    // Handle admin sections visibility
+    if (themeName === "theme-admin") {
+      adminFeatures.showAdminSections();
+    } else {
+      adminFeatures.hideAdminSections();
+    }
   }
 
   greenTheme.addEventListener("click", () =>
@@ -605,4 +600,7 @@ function initializeThemeSwitcher() {
     setTheme("theme-purple", purpleTheme)
   );
   blueTheme.addEventListener("click", () => setTheme("theme-blue", blueTheme));
+  adminTheme.addEventListener("click", () =>
+    setTheme("theme-admin", adminTheme)
+  );
 }
