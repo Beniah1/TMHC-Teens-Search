@@ -285,7 +285,7 @@ async function handleSubmit(e) {
 
     // Show success message after successful save
     showToast("success");
-    
+
     // Clear cache and update display
     searchCache.clear();
     editingId = null;
@@ -301,7 +301,6 @@ async function handleSubmit(e) {
       // Update stats in background
       fetchAndDisplayStats().catch(console.error);
     }, 0);
-
   } catch (error) {
     console.error("Error:", error);
     showToast("error");
@@ -312,7 +311,7 @@ async function handleSubmit(e) {
   }
 }
 
-// Optimize the showToast function
+// Update the showToast function
 function showToast(type) {
   const toast =
     type === "success" ? elements.successToast : elements.errorToast;
@@ -322,7 +321,7 @@ function showToast(type) {
       requestAnimationFrame(() => {
         toast.classList.remove("show");
       });
-    }, 2000); // Reduced from 3000ms to 2000ms
+    }, 3000); // Increased to 3 seconds for better readability
   });
 }
 
