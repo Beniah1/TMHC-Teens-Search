@@ -17,10 +17,10 @@ const elements = {
     phoneInput: document.getElementById('phoneInput'),
     ageInput: document.getElementById('ageInput'),
     levelInput: document.getElementById('levelInput'),
-    attendance5th: document.getElementById('attendance5th'),
-    attendance12th: document.getElementById('attendance12th'),
-    attendance19th: document.getElementById('attendance19th'),
-    attendance26th: document.getElementById('attendance26th'),
+    attendance5th: document.getElementById('attendance2nd'),
+    attendance12th: document.getElementById('attendance9th'),
+    attendance19th: document.getElementById('attendance16th'),
+    attendance26th: document.getElementById('attendance23rd'),
     cancelButton: document.getElementById('cancelButton'),
     closeButton: document.getElementById('closeButton'),
     successToast: document.getElementById('successToast'),
@@ -93,7 +93,7 @@ async function filterItems() {
 
     try {
         const { data, error } = await supabase
-            .from('csv_data_january')
+            .from('TMHCT_Feb')
             .select('*')
             .ilike('full_name', `%${searchTerm}%`);
 
@@ -163,10 +163,10 @@ function showModal(item = null) {
         elements.phoneInput.value = item.phone_number || '';
         elements.ageInput.value = item.age || '';
         elements.levelInput.value = item.current_level || '';
-        elements.attendance5th.value = item.attendance_5th || '';
-        elements.attendance12th.value = item.attendance_12th || '';
-        elements.attendance19th.value = item.attendance_19th || '';
-        elements.attendance26th.value = item.attendance_26th || '';
+        elements.attendance5th.value = item.attendance_2nd || '';
+        elements.attendance12th.value = item.attendance_9th || '';
+        elements.attendance19th.value = item.attendance_16th || '';
+        elements.attendance26th.value = item.attendance_23rd || '';
     }
 
     elements.modal.style.display = 'block';
@@ -183,12 +183,12 @@ async function handleSubmit(e) {
         full_name: elements.nameInput.value.trim(),
         gender: elements.genderInput.value,
         phone_number: elements.phoneInput.value.trim(),
-        age: parseInt(elements.ageInput.value) || null,
+        age: elements.ageInput.value ? parseInt(elements.ageInput.value) : null,
         current_level: elements.levelInput.value,
-        attendance_5th: elements.attendance5th.value,
-        attendance_12th: elements.attendance12th.value,
-        attendance_19th: elements.attendance19th.value,
-        attendance_26th: elements.attendance26th.value
+        attendance_2nd: elements.attendance5th.value || null,
+        attendance_9th: elements.attendance12th.value || null,
+        attendance_16th: elements.attendance19th.value || null,
+        attendance_23rd: elements.attendance26th.value || null
     };
 
     if (!formData.full_name) {
@@ -202,12 +202,12 @@ async function handleSubmit(e) {
         let response;
         if (editingId) {
             response = await supabase
-                .from('csv_data_january')
+                .from('TMHCT_Feb')
                 .update(formData)
                 .eq('id', editingId);
         } else {
             response = await supabase
-                .from('csv_data_january')
+                .from('TMHCT_Feb')
                 .insert([formData]);
         }
 
@@ -231,7 +231,7 @@ async function handleSubmit(e) {
             // Fetch and display the edited record
             if (editingId) {
                 const { data, error } = await supabase
-                    .from('csv_data_january')
+                    .from('TMHCT_Feb')
                     .select('*')
                     .eq('id', editingId)
                     .single();
@@ -290,7 +290,7 @@ async function deleteItem(id) {
 
     try {
         const { error } = await supabase
-            .from('csv_data_january')
+            .from('TMHCT_Feb')
             .delete()
             .eq('id', id);
 
@@ -318,11 +318,16 @@ async function deleteItem(id) {
 
 // Function to get attendance display
 function getAttendanceDisplay(item) {
-    const dates = ['5th', '12th', '19th', '26th'];
-    return dates.map(date => {
-        const value = item[`attendance_${date}`];
+    const attendanceFields = [
+        { field: 'attendance_2nd', display: '2nd' },
+        { field: 'attendance_9th', display: '9th' },
+        { field: 'attendance_16th', display: '16th' },
+        { field: 'attendance_23rd', display: '23rd' }
+    ];
+    return attendanceFields.map(field => {
+        const value = item[field.field];
         return `<div class="attendance-item">
-            <span>${date}:</span>
+            <span>${field.display}:</span>
             <span class="attendance-value ${value?.toLowerCase() === 'present' ? 'present' : 'absent'}">
                 ${escapeHtml(value || 'N/A')}
             </span>
@@ -334,7 +339,7 @@ function getAttendanceDisplay(item) {
 async function loadInitialData() {
     try {
         const { data, error } = await supabase
-            .from('csv_data_january')
+            .from('TMHCT_Feb')
             .select('*')
             .order('full_name');
 
@@ -351,7 +356,7 @@ async function loadInitialData() {
 async function fetchAndDisplayStats() {
     try {
         const { data, error } = await supabase
-            .from('csv_data_january')
+            .from('TMHCT_Feb')
             .select('*');
 
         if (error) throw error;

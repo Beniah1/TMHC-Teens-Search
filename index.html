@@ -8,6 +8,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="style.css">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://cdn.jsdelivr.net/npm/csv-export@1.1.0/dist/csv-export.min.js"></script>
 </head>
 
 <body>
@@ -86,8 +87,13 @@
             <!-- Cards will be dynamically added here -->
         </div>
 
-        <!-- Add Button -->
-        <button id="addButton" class="add-button">+</button>
+        <!-- Add and Download Buttons -->
+        <div class="fixed-buttons">
+            <div class="buttons-glass-container">
+                <button id="downloadButton" class="download-button" onclick="downloadCSV()">Download CSV</button>
+                <button id="addButton" class="add-button">+</button>
+            </div>
+        </div>
     </div>
 
     <!-- Toast Notifications -->
@@ -150,32 +156,32 @@
                     </select>
                 </div>
                 <div class="form-group">
-                    <label for="attendance5th">Attendance 5th</label>
-                    <select id="attendance5th">
+                    <label for="attendance2nd">Attendance 2nd</label>
+                    <select id="attendance2nd">
                         <option value="" disabled selected>Select Status</option>
                         <option value="Present">Present</option>
                         <option value="Absent">Absent</option>
                     </select>
                 </div>
                 <div class="form-group">
-                    <label for="attendance12th">Attendance 12th</label>
-                    <select id="attendance12th">
+                    <label for="attendance9th">Attendance 9th</label>
+                    <select id="attendance9th">
                         <option value="" disabled selected>Select Status</option>
                         <option value="Present">Present</option>
                         <option value="Absent">Absent</option>
                     </select>
                 </div>
                 <div class="form-group">
-                    <label for="attendance19th">Attendance 19th</label>
-                    <select id="attendance19th">
+                    <label for="attendance16th">Attendance 16th</label>
+                    <select id="attendance16th">
                         <option value="" disabled selected>Select Status</option>
                         <option value="Present">Present</option>
                         <option value="Absent">Absent</option>
                     </select>
                 </div>
                 <div class="form-group">
-                    <label for="attendance26th">Attendance 26th</label>
-                    <select id="attendance26th">
+                    <label for="attendance23rd">Attendance 23rd</label>
+                    <select id="attendance23rd">
                         <option value="" disabled selected>Select Status</option>
                         <option value="Present">Present</option>
                         <option value="Absent">Absent</option>

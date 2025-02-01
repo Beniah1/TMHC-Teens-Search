@@ -211,9 +211,8 @@ select:focus {
 }
 
 .add-button {
-    position: fixed;
-    bottom: 1rem;
-    right: 1rem;
+    position: static;
+    margin: 0;
     width: 50px;
     height: 50px;
     border-radius: 50%;
@@ -295,7 +294,6 @@ select:focus {
     -webkit-backdrop-filter: blur(10px); /* Ensures support for Safari */
 }
 
-
 @media (min-width: 640px) {
     .form-actions {
         gap: 1rem;
@@ -327,84 +325,94 @@ select:focus {
 
 .toast {
     position: fixed;
-    bottom: 1rem;
+    bottom: 20px;
     left: 50%;
     transform: translateX(-50%);
-    padding: 0.75rem 1.25rem;
+    padding: 12px 24px;
     border-radius: 8px;
     color: white;
     font-weight: 500;
-    font-size: 0.9rem;
+    display: flex;
+    align-items: center;
+    gap: 8px;
     opacity: 0;
     visibility: hidden;
     transition: all 0.3s ease;
     z-index: 1000;
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    width: 90%;
-    max-width: 320px;
+}
+
+.toast.success {
+    background-color: #4ade80;
+}
+
+.toast.error {
+    background-color: #f87171;
 }
 
 .toast.show {
     opacity: 1;
     visibility: visible;
-    transform: translateX(-50%) translateY(0);
+    transform: translate(-50%, -20px);
 }
 
-@media (min-width: 640px) {
-    .toast {
-        width: auto;
-        padding: 1rem 2rem;
-        font-size: 1rem;
-        gap: 0.75rem;
-    }
+.toast svg {
+    width: 20px;
+    height: 20px;
+}
+
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 1000;
+}
+
+.modal.closing {
+    animation: fadeOut 0.2s ease-out;
+}
+
+.modal-content {
+    position: relative;
+    background: white;
+    padding: 2rem;
+    border-radius: 12px;
+    max-width: 500px;
+    width: 90%;
+    margin: 2rem auto;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
 }
 
 .close-button {
     position: absolute;
     top: 1rem;
     right: 1rem;
-    width: 2.5rem; /* Slightly bigger for better interaction */
-    height: 2.5rem;
-    border-radius: 50%; /* Fully round */
-    background: linear-gradient(135deg, #45a049, #357d39) !important; /* Ensure it always has color */
+    background: none;
     border: none;
-    display: flex;
-    align-items: center;
-    justify-content: center;
     cursor: pointer;
-    transition: background 0.3s ease, transform 0.2s ease;
+    padding: 0.5rem;
 }
 
-/* Hover effect: changes gradient color */
-.close-button:hover {
-    background: linear-gradient(135deg, rgb(250, 42, 42), #357d39) !important;
-    transform: scale(1.1);
+.close-button svg {
+    width: 24px;
+    height: 24px;
+    stroke: #4b5563;
+    transition: stroke 0.2s ease;
 }
 
-.bg-w {
-    background-color: white !important;
+.close-button:hover svg {
+    stroke: #1f2937;
 }
 
-@media (min-width: 640px) {
-    .close-button {
-        top: 1rem;
-        right: 1rem;
-        width: 2.5rem;
-        height: 2.5rem;
-    }
-}
-
-@keyframes fadeIn {
+@keyframes fadeOut {
     from {
-        opacity: 0;
-        transform: translateY(10px);
+        opacity: 1;
     }
     to {
-        opacity: 1;
-        transform: translateY(0);
+        opacity: 0;
     }
 }
 
@@ -419,99 +427,104 @@ select:focus {
     }
 }
 
-@keyframes modalFadeIn {
-    from {
-        background: rgba(0, 0, 0, 0);
-    }
-    to {
-        background: rgba(0, 0, 0, 0.5);
-    }
-}
-
-@keyframes modalContentSlideIn {
-    from {
-        opacity: 0;
-        transform: scale(0.95) translateY(-40px);
-    }
-    to {
-        opacity: 1;
-        transform: scale(1) translateY(0);
-    }
-}
-
-.modal {
-    display: none;
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.5);
-    z-index: 1000;
-    animation: modalFadeIn 0.3s ease-out;
-}
-
-.modal.closing {
-    animation: modalClose 0.2s ease-out forwards;
-}
-
-@keyframes modalClose {
-    0% {
-        opacity: 1;
-        transform: scale(1);
-    }
-    100% {
-        opacity: 0;
-        transform: scale(0.8);
-    }
-}
-
-@keyframes buttonPress {
-    0% {
-        transform: scale(1);
-    }
-    50% {
-        transform: scale(0.95);
-    }
-    100% {
-        transform: scale(1);
-    }
-}
-
 .button-press {
-    animation: buttonPress 0.2s ease-out forwards;
+    transform: scale(0.95);
+    opacity: 0.9;
 }
 
-.cancel-button {
-    background: linear-gradient(135deg, #ff4d4d, #dc2626);
-    color: white;
-    border: none;
+/* Fixed buttons container */
+.fixed-buttons {
+    position: fixed;
+    bottom: 2rem;
+    display: flex;
+    z-index: 100;
+    width: 100%;
+    padding: 0 2rem;
+    justify-content: center;
+    pointer-events: none;
 }
 
-.cancel-button:hover {
-    background: linear-gradient(135deg, #dc2626, #b91c1c);
-    transform: translateY(-1px);
-    box-shadow: 0 4px 6px rgba(220, 38, 38, 0.2);
+.fixed-buttons > * {
+    pointer-events: auto;
 }
 
-.save-button {
+/* Button container with glass effect */
+.buttons-glass-container {
+    display: flex;
+    gap: 1rem;
+    padding: 1rem 1.5rem;
+    background: rgba(44, 121, 46, 0.15);
+    border-radius: 30px;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
+}
+
+/* Download button styles */
+.download-button {
+    height: 50px;
+    padding: 0 1.5rem;
+    border-radius: 25px;
     background: linear-gradient(135deg, #45a049, #357d39);
     color: white;
     border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1rem;
+    font-weight: 600;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+    white-space: nowrap;
 }
 
-.save-button:hover {
+.download-button:hover {
+    transform: translateY(-2px);
     background: linear-gradient(135deg, #357d39, #245326);
-    transform: translateY(-1px);
-    box-shadow: 0 4px 6px rgba(69, 160, 73, 0.2);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
 }
 
-.toast.success {
-    background: linear-gradient(135deg, #45a049, #357d39);
+.download-button:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+    transform: none;
 }
 
-.toast.error {
-    background: linear-gradient(135deg, #ef4444, #dc2626);
+/* Responsive styles for buttons */
+@media (max-width: 640px) {
+    .fixed-buttons {
+        bottom: 1rem;
+        padding: 0 1rem;
+    }
+
+    .buttons-glass-container {
+        padding: 0.75rem 1rem;
+        gap: 0.75rem;
+    }
+
+    .download-button {
+        height: 45px;
+        padding: 0 1.25rem;
+        font-size: 0.9rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .fixed-buttons {
+        padding: 0 0.75rem;
+    }
+
+    .buttons-glass-container {
+        padding: 0.5rem 0.75rem;
+        gap: 0.5rem;
+    }
+
+    .download-button {
+        padding: 0 1rem;
+        font-size: 0.85rem;
+    }
 }
 
 .stats-container {
@@ -767,4 +780,127 @@ select:focus {
 .button-press {
     transform: scale(0.95);
     opacity: 0.9;
+}
+
+.cancel-button {
+    background: linear-gradient(135deg, #ff4d4d, #dc2626);
+    color: white;
+    border: none;
+}
+
+.cancel-button:hover {
+    background: linear-gradient(135deg, #dc2626, #b91c1c);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 6px rgba(220, 38, 38, 0.2);
+}
+
+.save-button {
+    background: linear-gradient(135deg, #45a049, #357d39);
+    color: white;
+    border: none;
+}
+
+.save-button:hover {
+    background: linear-gradient(135deg, #357d39, #245326);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 6px rgba(69, 160, 73, 0.2);
+}
+
+.toast.success {
+    background: linear-gradient(135deg, #45a049, #357d39);
+}
+
+.toast.error {
+    background: linear-gradient(135deg, #ef4444, #dc2626);
+}
+
+.bg-w {
+    background-color: white !important;
+}
+
+.close-button {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    width: 2.5rem; /* Slightly bigger for better interaction */
+    height: 2.5rem;
+    border-radius: 50%; /* Fully round */
+    background: linear-gradient(135deg, #45a049, #357d39) !important; /* Ensure it always has color */
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: background 0.3s ease, transform 0.2s ease;
+}
+
+/* Hover effect: changes gradient color */
+.close-button:hover {
+    background: linear-gradient(135deg, rgb(250, 42, 42), #357d39) !important;
+    transform: scale(1.1);
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes scaleIn {
+    from {
+        transform: scale(0.95);
+        opacity: 0;
+    }
+    to {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+@keyframes modalFadeIn {
+    from {
+        background: rgba(0, 0, 0, 0);
+    }
+    to {
+        background: rgba(0, 0, 0, 0.5);
+    }
+}
+
+@keyframes modalContentSlideIn {
+    from {
+        opacity: 0;
+        transform: scale(0.95) translateY(-40px);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+    }
+}
+
+@keyframes modalClose {
+    0% {
+        opacity: 1;
+        transform: scale(1);
+    }
+    100% {
+        opacity: 0;
+        transform: scale(0.8);
+    }
+}
+
+@keyframes buttonPress {
+    0% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(0.95);
+    }
+    100% {
+        transform: scale(1);
+    }
 }
