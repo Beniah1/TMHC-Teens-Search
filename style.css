@@ -1568,3 +1568,49 @@ body.theme-blue input::placeholder {
   background: rgb(220, 38, 38);
   transform: translateY(-1px);
 }
+
+/* Default (Green theme) input text color */
+.search-section input[type="text"] {
+  width: 100%;
+  padding: 1rem;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-radius: 12px;
+  font-size: 1rem;
+  background: rgba(255, 255, 255, 0.95);
+  color: #357d39; /* Default green color */
+  font-weight: 500;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+/* Purple theme input text color */
+body.theme-purple .search-section input[type="text"] {
+  color: #800080;
+}
+
+/* Blue theme input text color */
+body.theme-blue .search-section input[type="text"] {
+  color: #1e3a8a;
+}
+
+/* Admin theme input text color */
+body.theme-admin .search-section input[type="text"] {
+  color: #dc2626;
+}
+
+/* Update placeholder colors for each theme */
+body.theme-green .search-section input[type="text"]::placeholder {
+  color: rgba(53, 125, 57, 0.7);
+}
+
+body.theme-purple .search-section input[type="text"]::placeholder {
+  color: rgba(128, 0, 128, 0.7);
+}
+
+body.theme-blue .search-section input[type="text"]::placeholder {
+  color: rgba(30, 58, 138, 0.7);
+}
+
+body.theme-admin .search-section input[type="text"]::placeholder {
+  color: rgba(220, 38, 38, 0.7);
+}
