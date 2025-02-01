@@ -1520,24 +1520,51 @@ body.theme-blue input::placeholder {
   display: flex;
   width: 100%;
   gap: 0.5rem;
+  padding: 0.25rem;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 6px;
 }
 
-/* Style for the edit button */
+/* Edit button styles */
 .button-container .search-button {
+  flex: 1;
+  padding: 0.4rem;
   background: rgba(255, 255, 255, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 4px;
+  color: white;
+  font-size: 0.875rem;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 0; /* Allows button to shrink */
 }
 
+/* Delete button styles */
+.button-container .bg-red-500 {
+  padding: 0.4rem 0.8rem;
+  background: rgb(239, 68, 68);
+  color: white;
+  font-weight: 500;
+  font-size: 0.875rem;
+  border-radius: 4px;
+  border: none;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  white-space: nowrap; /* Prevents text wrapping */
+}
+
+/* Hover effects */
 .button-container .search-button:hover {
   background: rgba(255, 255, 255, 0.3);
   transform: translateY(-1px);
 }
 
-/* Style for the delete button */
-.button-container .bg-red-500 {
-  background: rgba(220, 38, 38, 0.8);
-}
-
 .button-container .bg-red-500:hover {
-  background: rgba(220, 38, 38, 1);
+  background: rgb(220, 38, 38);
   transform: translateY(-1px);
 }
