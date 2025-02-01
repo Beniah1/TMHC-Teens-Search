@@ -507,6 +507,7 @@ select:focus {
   border-radius: 30px;
   border: 1px solid rgba(255, 255, 255, 0.2);
   box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
+  z-index: 99;
 }
 
 /* Download button styles */
@@ -1097,4 +1098,234 @@ select:focus {
 .result-item {
   transform: translateZ(0);
   will-change: transform;
+}
+
+/* Update Theme Switcher position and style */
+.theme-switcher {
+  position: fixed;
+  bottom: 6rem;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 0.5rem;
+  background: rgba(255, 255, 255, 0.15);
+  padding: 0.4rem;
+  border-radius: 50px;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  z-index: 98;
+  width: 120px; /* Fixed width to show all options */
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.theme-button {
+  flex: 1;
+  height: 24px;
+  border-radius: 50px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  cursor: pointer;
+  background: rgba(255, 255, 255, 0.2);
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Theme button backgrounds */
+.green-theme {
+  background: linear-gradient(135deg, #45a049, #245326);
+}
+
+.purple-theme {
+  background: linear-gradient(135deg, #800080, #4a0080);
+}
+
+.blue-theme {
+  background: linear-gradient(135deg, #1e3a8a, #1e40af);
+}
+
+.theme-button:hover {
+  transform: scale(1.05);
+  border-color: rgba(255, 255, 255, 0.8);
+}
+
+.theme-button.active {
+  border-color: white;
+  box-shadow: 0 0 15px rgba(255, 255, 255, 0.3);
+  transform: scale(1.1);
+}
+
+/* Glass effect container */
+.theme-switcher::before {
+  content: "";
+  position: absolute;
+  top: -0.5rem;
+  left: -0.5rem;
+  right: -0.5rem;
+  bottom: -0.5rem;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 60px;
+  z-index: -1;
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  opacity: 1;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .theme-switcher {
+    bottom: 5.5rem;
+    transform: translateX(-50%) scale(0.9);
+  }
+}
+
+@media (max-width: 480px) {
+  .theme-switcher {
+    bottom: 5rem;
+    transform: translateX(-50%) scale(0.85);
+  }
+}
+
+/* Purple Theme Preview */
+.purple-theme .theme-preview {
+  background: linear-gradient(135deg, #800080, #000000);
+}
+
+/* Blue Theme Preview */
+.blue-theme .theme-preview {
+  background: linear-gradient(135deg, #1e3a8a, #fbbf24);
+}
+
+/* Green Theme Preview */
+.green-theme .theme-preview {
+  background: linear-gradient(135deg, #45a049, #245326);
+}
+
+/* Theme Classes for Body */
+body.theme-purple {
+  background: linear-gradient(-45deg, #800080, #000000, #4a0080);
+  background-size: 400% 400%;
+  animation: gradientAnimation 15s ease infinite;
+}
+
+body.theme-blue {
+  background: linear-gradient(-45deg, #1e3a8a, #fbbf24, #1e40af);
+  background-size: 400% 400%;
+  animation: gradientAnimation 15s ease infinite;
+}
+
+body.theme-green {
+  background: linear-gradient(-45deg, #45a049, #245326, #357d39);
+  background-size: 400% 400%;
+  animation: gradientAnimation 15s ease infinite;
+}
+
+body.theme-purple .stat-header,
+body.theme-purple .filter-container {
+  background: linear-gradient(135deg, #800080, #4a0080);
+}
+
+body.theme-purple .result-item h3 {
+  background: linear-gradient(135deg, #800080, #4a0080);
+}
+
+body.theme-blue .stat-header,
+body.theme-blue .filter-container {
+  background: linear-gradient(135deg, #1e3a8a, #1e40af);
+}
+
+body.theme-blue .result-item h3 {
+  background: linear-gradient(135deg, #1e3a8a, #1e40af);
+}
+
+body.theme-green .stat-header,
+body.theme-green .filter-container {
+  background: linear-gradient(135deg, #45a049, #357d39);
+}
+
+body.theme-green .result-item h3 {
+  background: linear-gradient(135deg, #45a049, #357d39);
+}
+
+/* Theme-specific colors for buttons and interactive elements */
+/* Purple Theme */
+body.theme-purple .add-button,
+body.theme-purple .search-button,
+body.theme-purple .save-button {
+  background: linear-gradient(135deg, #800080, #4a0080);
+}
+
+body.theme-purple .add-button:hover,
+body.theme-purple .search-button:hover,
+body.theme-purple .save-button:hover {
+  background: linear-gradient(135deg, #4a0080, #2d004d);
+}
+
+body.theme-purple .cancel-button {
+  background: linear-gradient(135deg, #dc2626, #b91c1c);
+}
+
+/* Blue Theme */
+body.theme-blue .add-button,
+body.theme-blue .search-button,
+body.theme-blue .save-button {
+  background: linear-gradient(135deg, #1e3a8a, #1e40af);
+}
+
+body.theme-blue .add-button:hover,
+body.theme-blue .search-button:hover,
+body.theme-blue .save-button:hover {
+  background: linear-gradient(135deg, #1e40af, #1e3a8a);
+}
+
+body.theme-blue .cancel-button {
+  background: linear-gradient(135deg, #991b1b, #7f1d1d);
+}
+
+/* Theme-specific focus states */
+body.theme-purple input:focus,
+body.theme-purple select:focus {
+  border-color: #800080;
+  box-shadow: 0 0 0 3px rgba(128, 0, 128, 0.2);
+}
+
+body.theme-blue input:focus,
+body.theme-blue select:focus {
+  border-color: #1e3a8a;
+  box-shadow: 0 0 0 3px rgba(30, 58, 138, 0.2);
+}
+
+/* Theme-specific attendance colors */
+body.theme-purple .attendance-value.present {
+  background-color: #c084fc;
+  color: #581c87;
+}
+
+body.theme-blue .attendance-value.present {
+  background-color: #60a5fa;
+  color: #1e3a8a;
+}
+
+/* Theme-specific level count badges */
+body.theme-purple .level-count {
+  background: #800080;
+}
+
+body.theme-blue .level-count {
+  background: #1e3a8a;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .theme-switcher {
+    top: auto;
+    bottom: 6rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .theme-switcher {
+    bottom: 5.5rem;
+    transform: translateX(-50%) scale(0.85);
+  }
 }

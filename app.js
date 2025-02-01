@@ -489,6 +489,7 @@ async function fetchAndDisplayStats() {
 
 // Load initial data when page loads
 document.addEventListener("DOMContentLoaded", () => {
+  initializeThemeSwitcher();
   loadInitialData();
 });
 
@@ -555,4 +556,53 @@ async function filterByCategory(category) {
     console.error("Error filtering by category:", error);
     showToast("error");
   }
+}
+
+// Update the theme switcher initialization
+function initializeThemeSwitcher() {
+  const themeSwitcher = document.querySelector(".theme-switcher");
+  const greenTheme = document.querySelector(".green-theme");
+  const purpleTheme = document.querySelector(".purple-theme");
+  const blueTheme = document.querySelector(".blue-theme");
+
+  // Load saved theme or default to green
+  const savedTheme = localStorage.getItem("selectedTheme") || "theme-green";
+  document.body.className = savedTheme;
+  const activeButton = document.querySelector(
+    `.${savedTheme.replace("theme-", "")}-theme`
+  );
+  if (activeButton) activeButton.classList.add("active");
+
+  // Toggle expanded state on click
+  themeSwitcher.addEventListener("click", () => {
+    themeSwitcher.classList.toggle("expanded");
+  });
+
+  // Close theme switcher when clicking outside
+  document.addEventListener("click", (e) => {
+    if (!themeSwitcher.contains(e.target)) {
+      themeSwitcher.classList.remove("expanded");
+    }
+  });
+
+  function setTheme(themeName, button) {
+    document.body.className = themeName;
+    localStorage.setItem("selectedTheme", themeName);
+    [greenTheme, purpleTheme, blueTheme].forEach((btn) =>
+      btn.classList.remove("active")
+    );
+    button.classList.add("active");
+    // Close the switcher after selection
+    setTimeout(() => {
+      themeSwitcher.classList.remove("expanded");
+    }, 300);
+  }
+
+  greenTheme.addEventListener("click", () =>
+    setTheme("theme-green", greenTheme)
+  );
+  purpleTheme.addEventListener("click", () =>
+    setTheme("theme-purple", purpleTheme)
+  );
+  blueTheme.addEventListener("click", () => setTheme("theme-blue", blueTheme));
 }
