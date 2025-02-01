@@ -605,7 +605,7 @@ function initializeThemeSwitcher() {
       if (adminAuth && adminAuth.showModal) {
         adminAuth.showModal();
       } else {
-        console.error('Admin authentication not initialized');
+        console.error("Admin authentication not initialized");
       }
     } else {
       setTheme("theme-admin", adminTheme);
