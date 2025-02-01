@@ -1,0 +1,79 @@
+# Private instructions
+update_instructions.txt
+
+# Node modules
+node_modules/
+
+# Environment variables
+.env
+.env.local
+
+# IDE files
+.vscode/
+.idea/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# === HOW TO UPDATE TMHT TEENS SEARCH APP ===
+
+# STEP 1: DATABASE
+# Go to Supabase and create new table with updated month:
+# Example: TMHCT_Mar, TMHCT_Apr, etc.
+# Update attendance dates in table columns:
+# - attendance_[date1] becomes attendance_2nd, attendance_9th, etc.
+
+# STEP 2: UPDATE FILES
+# A) index.html - Update form fields:
+# - Find attendance form fields (around line 150)
+# - Update IDs: attendance2nd -> attendanceNEWDATE
+# - Update labels: "Attendance 2nd" -> "Attendance NEWDATE"
+
+# B) app.js - Update 4 places:
+# 1. Table name in all Supabase queries:
+#    .from('TMHCT_Feb') -> .from('TMHCT_NEWMONTH')
+# 2. Element IDs at top:
+#    attendance2nd -> attendanceNEWDATE
+# 3. formData object in handleSubmit:
+#    attendance_2nd -> attendance_NEWDATE
+# 4. attendanceFields array:
+#    Update field and display values
+
+# C) csvExport.js - Update 2 places:
+# 1. Table name in Supabase query
+# 2. headerConfig array with new column names
+
+# STEP 3: TEST
+# 1. Search works
+# 2. Add new record works
+# 3. Edit record works
+# 4. Delete works
+# 5. CSV export works
+# 6. All attendance dates show correctly
+
+# === AI PROMPT FOR UPDATES ===
+"""
+Please help me update my TMHT Teens Search application with new attendance dates. Here's what I need:
+
+Current setup:
+- Table name: TMHCT_[CURRENTMONTH]
+- Attendance dates: [LIST_CURRENT_DATES]
+
+Need to change to:
+- New table name: TMHCT_[NEWMONTH]
+- New attendance dates: [LIST_NEW_DATES]
+
+Files to update:
+1. index.html: Form fields for attendance
+2. app.js: Supabase queries and form handling
+3. csvExport.js: CSV export configuration
+
+Please provide specific code changes for:
+1. Database table creation SQL
+2. HTML form field updates
+3. JavaScript table name and field updates
+4. CSV export configuration updates
+
+Important: Keep all other functionality (search, add, edit, delete) working the same way.
+"""
