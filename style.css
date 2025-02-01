@@ -1981,3 +1981,31 @@ body.dark-mode.theme-admin .result-item {
   background: rgba(40, 40, 40, 0.8);
   border-color: rgba(255, 255, 255, 0.1);
 }
+
+/* Update/add these styles for the blur effect */
+.status-indicator {
+  /* Maintain shape and blur across devices */
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
+  background: rgba(255, 255, 255, 0.1);
+
+  /* Ensure consistent rendering on mobile */
+  transform: translateZ(0);
+  -webkit-transform: translateZ(0);
+
+  /* Add vendor prefixes for broader support */
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+}
+
+/* Add specific mobile adjustments */
+@media screen and (max-width: 768px) {
+  .status-indicator {
+    /* Adjust blur intensity for mobile if needed */
+    -webkit-backdrop-filter: blur(6px);
+    backdrop-filter: blur(6px);
+
+    /* Ensure GPU acceleration on mobile */
+    will-change: transform;
+  }
+}
