@@ -612,3 +612,87 @@ function initializeThemeSwitcher() {
     }
   });
 }
+
+// Add this function to handle CSV download
+async function downloadCSV() {
+  try {
+    // Show loading state
+    const downloadButton = document.getElementById("downloadButton");
+    const originalText = downloadButton.textContent;
+    downloadButton.textContent = "Downloading...";
+    downloadButton.disabled = true;
+
+    // Fetch all data from Supabase
+    const { data, error } = await supabase
+      .from("TMHCT_Feb")
+      .select("*")
+      .order("full_name");
+
+    if (error) throw error;
+
+    if (!data || data.length === 0) {
+      showToast("error");
+      return;
+    }
+
+    // Format data for CSV
+    const csvData = data.map((item) => ({
+      "Full Name": item.full_name || "",
+      Gender: item.gender || "",
+      "Phone Number": item.phone_number || "",
+      Age: item.age || "",
+      "Current Level": item.current_level || "",
+      "Attendance 2nd": item.attendance_2nd || "",
+      "Attendance 9th": item.attendance_9th || "",
+      "Attendance 16th": item.attendance_16th || "",
+      "Attendance 23rd": item.attendance_23rd || "",
+    }));
+
+    // Create CSV content
+    const headers = Object.keys(csvData[0]);
+    let csvContent = headers.join(",") + "\n";
+
+    csvContent += csvData
+      .map((row) => {
+        return headers
+          .map((header) => {
+            let cellData = row[header] || "";
+            // Handle commas and quotes in the data
+            if (
+              cellData.toString().includes(",") ||
+              cellData.toString().includes('"')
+            ) {
+              cellData = `"${cellData.toString().replace(/"/g, '""')}"`;
+            }
+            return cellData;
+          })
+          .join(",");
+      })
+      .join("\n");
+
+    // Create and download the file
+    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+    const link = document.createElement("a");
+    const url = URL.createObjectURL(blob);
+
+    link.setAttribute("href", url);
+    link.setAttribute(
+      "download",
+      `TMHT_Data_${new Date().toISOString().split("T")[0]}.csv`
+    );
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+
+    // Show success message
+    showToast("success");
+  } catch (error) {
+    console.error("Error downloading CSV:", error);
+    showToast("error");
+  } finally {
+    // Reset button state
+    const downloadButton = document.getElementById("downloadButton");
+    downloadButton.textContent = "Download CSV";
+    downloadButton.disabled = false;
+  }
+}
