@@ -283,8 +283,13 @@ async function handleSubmit(e) {
 
     if (error) throw error;
 
-    // Show success message after successful save
-    showToast("success");
+    // Show success message
+    const toast = document.getElementById('successToast');
+    if (toast) {
+      toast.querySelector('span').textContent = 'Information saved successfully';
+      toast.classList.add('show');
+      setTimeout(() => toast.classList.remove('show'), 3000);
+    }
 
     // Clear cache and update display
     searchCache.clear();

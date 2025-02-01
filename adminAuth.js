@@ -112,6 +112,14 @@ const adminAuth = {
         const modalContent = document.querySelector('.admin-modal-content');
         modalContent.classList.add('success');
 
+        // Show login success toast
+        const toast = document.getElementById('successToast');
+        if (toast) {
+            toast.querySelector('span').textContent = 'Logged in successfully';
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 3000);
+        }
+
         setTimeout(() => {
             this.hideModal();
             adminFeatures.showAdminSections();
