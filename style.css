@@ -1115,13 +1115,13 @@ select:focus {
   -webkit-backdrop-filter: blur(8px);
   border: 1px solid rgba(255, 255, 255, 0.2);
   z-index: 98;
-  width: 120px; /* Fixed width to show all options */
+  width: 160px; /* Base width for 4 buttons */
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
 .theme-button {
   flex: 1;
-  height: 24px;
+  height: 28px; /* Slightly smaller height */
   border-radius: 50px;
   border: 2px solid rgba(255, 255, 255, 0.3);
   cursor: pointer;
@@ -1168,21 +1168,60 @@ select:focus {
   z-index: -1;
   backdrop-filter: blur(4px);
   -webkit-backdrop-filter: blur(4px);
-  opacity: 1;
+  opacity: 0.5;
 }
 
 /* Responsive adjustments */
 @media (max-width: 768px) {
   .theme-switcher {
+    width: 140px; /* Slightly smaller on tablets */
     bottom: 5.5rem;
-    transform: translateX(-50%) scale(0.9);
+    padding: 0.35rem;
+    gap: 0.4rem;
+  }
+
+  .theme-button {
+    height: 24px;
+  }
+
+  /* Adjust other elements for better mobile layout */
+  .search-section input[type="text"] {
+    font-size: 0.95rem;
+    padding: 0.75rem 1rem;
+  }
+
+  .stat-card {
+    padding: 0.75rem;
   }
 }
 
 @media (max-width: 480px) {
   .theme-switcher {
+    width: 120px; /* Even smaller on phones */
     bottom: 5rem;
-    transform: translateX(-50%) scale(0.85);
+    padding: 0.3rem;
+    gap: 0.3rem;
+  }
+
+  .theme-button {
+    height: 22px;
+  }
+
+  /* Adjust buttons container for mobile */
+  .fixed-buttons {
+    bottom: 1rem;
+  }
+
+  .add-button {
+    width: 50px;
+    height: 50px;
+    font-size: 1.5rem;
+  }
+
+  /* Adjust admin logout button for mobile */
+  .admin-logout-button {
+    padding: 0.5rem 1rem;
+    font-size: 0.9rem;
   }
 }
 
