@@ -600,7 +600,15 @@ function initializeThemeSwitcher() {
     setTheme("theme-purple", purpleTheme)
   );
   blueTheme.addEventListener("click", () => setTheme("theme-blue", blueTheme));
-  adminTheme.addEventListener("click", () =>
-    setTheme("theme-admin", adminTheme)
-  );
+  adminTheme.addEventListener("click", () => {
+    if (!adminAuth || !adminAuth.isAuthenticated) {
+      if (adminAuth && adminAuth.showModal) {
+        adminAuth.showModal();
+      } else {
+        console.error('Admin authentication not initialized');
+      }
+    } else {
+      setTheme("theme-admin", adminTheme);
+    }
+  });
 }

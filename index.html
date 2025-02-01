@@ -105,6 +105,12 @@
                 </select>
                 <button id="downloadButton" class="download-button" onclick="downloadCSV()">Download CSV</button>
             </div>
+            <div class="admin-header">
+                <button id="adminLogout" class="admin-logout-button">
+                    <span>Logout</span>
+                    <span class="logout-icon">🔒</span>
+                </button>
+            </div>
         </div>
 
         <!-- Cards Container -->
@@ -219,8 +225,30 @@
         </div>
     </div>
 
-    <script src="app.js"></script>
+    <!-- Admin Login Modal -->
+    <div id="adminLoginModal" class="admin-modal">
+        <div class="admin-modal-content">
+            <div class="lock-animation">
+                <div class="lock-icon">🔒</div>
+            </div>
+            <h2>Admin Access</h2>
+            <form id="adminLoginForm" class="admin-login-form">
+                <div class="input-group">
+                    <input type="password" id="adminPassword" placeholder="Enter admin password" required>
+                    <div class="password-toggle">👁️</div>
+                </div>
+                <button type="submit" class="admin-submit">
+                    <span class="button-text">Login</span>
+                    <div class="button-loader"></div>
+                </button>
+            </form>
+        </div>
+    </div>
+
     <script src="admin.js"></script>
+    <script src="adminAuth.js"></script>
+    <script src="app.js"></script>
+    <link rel="stylesheet" href="adminStyles.css">
 </body>
 
 </html>
