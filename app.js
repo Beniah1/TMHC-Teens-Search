@@ -195,27 +195,21 @@ function getItemHTML(item, itemData) {
   return `
         <div class="result-item">
             <h3>
-                ${escapeHtml(item.full_name)}
                 <div class="button-container">
-                    <button onclick="editItem('${itemData}')" class="search-button py-2 px-4 text-sm">
+                    <button onclick="editItem('${itemData}')" class="search-button">
                         Edit
                     </button>
-                    <button onclick="deleteItem(${
-                      item.id
-                    })" class="bg-red-500 hover:bg-red-600 text-white py-2 px-4 rounded text-sm">
+                    <button onclick="deleteItem(${item.id})" class="bg-red-500 hover:bg-red-600">
                         Delete
                     </button>
                 </div>
+                <div class="name-text">${escapeHtml(item.full_name)}</div>
             </h3>
             <p>
                 <strong>Gender:</strong> ${escapeHtml(item.gender || "N/A")}<br>
                 <strong>Age:</strong> ${item.age || "N/A"}<br>
-                <strong>Phone:</strong> ${escapeHtml(
-                  item.phone_number || "N/A"
-                )}<br>
-                <strong>Level:</strong> ${escapeHtml(
-                  item.current_level || "N/A"
-                )}
+                <strong>Phone:</strong> ${escapeHtml(item.phone_number || "N/A")}<br>
+                <strong>Level:</strong> ${escapeHtml(item.current_level || "N/A")}
             </p>
             <div class="attendance-section">
                 <strong>Attendance:</strong><br>
