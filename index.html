@@ -81,13 +81,16 @@
 
         <!-- Category filter -->
         <div class="category-filter">
-            <select id="categoryFilter" onchange="filterByCategory(this.value)">
-                <option value="all">All Entries</option>
-                <option value="SHS">SHS Students</option>
-                <option value="JHS">JHS Students</option>
-                <option value="COMPLETED">Completed</option>
-                <option value="UNIVERSITY">University</option>
-            </select>
+            <div class="filter-container">
+                <select id="categoryFilter" onchange="filterByCategory(this.value)">
+                    <option value="all">All Entries</option>
+                    <option value="SHS">SHS Students</option>
+                    <option value="JHS">JHS Students</option>
+                    <option value="COMPLETED">Completed</option>
+                    <option value="UNIVERSITY">University</option>
+                </select>
+                <button id="downloadButton" class="download-button" onclick="downloadCSV()">Download CSV</button>
+            </div>
         </div>
 
         <!-- Cards Container -->
@@ -98,7 +101,6 @@
         <!-- Add and Download Buttons -->
         <div class="fixed-buttons">
             <div class="buttons-glass-container">
-                <button id="downloadButton" class="download-button" onclick="downloadCSV()">Download CSV</button>
                 <button id="addButton" class="add-button">+</button>
             </div>
         </div>
