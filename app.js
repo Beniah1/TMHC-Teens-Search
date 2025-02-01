@@ -581,17 +581,37 @@ function initializeThemeSwitcher() {
   // Initialize admin features
   adminFeatures.init();
 
-  // Load saved theme or default to green
-  const savedTheme = localStorage.getItem("selectedTheme") || "theme-green";
-  document.body.className = savedTheme;
+  // Load saved theme and dark mode preferences
+  const savedColorTheme = localStorage.getItem("selectedTheme") || "theme-green";
+  const isDarkMode = localStorage.getItem("theme") === "dark";
+
+  // Apply both color theme and dark mode if needed
+  document.body.className = savedColorTheme;
+  if (isDarkMode) {
+    document.body.classList.add('dark-mode');
+  }
+
+  // Activate the correct theme button
   const activeButton = document.querySelector(
-    `.${savedTheme.replace("theme-", "")}-theme`
+    `.${savedColorTheme.replace("theme-", "")}-theme`
   );
   if (activeButton) activeButton.classList.add("active");
 
   function setTheme(themeName, button) {
+    // Preserve dark mode state
+    const isDarkMode = document.body.classList.contains('dark-mode');
+    
+    // Set new theme
     document.body.className = themeName;
+    
+    // Restore dark mode if it was active
+    if (isDarkMode) {
+      document.body.classList.add('dark-mode');
+    }
+    
     localStorage.setItem("selectedTheme", themeName);
+    
+    // Update button states
     [greenTheme, purpleTheme, blueTheme, adminTheme].forEach((btn) =>
       btn.classList.remove("active")
     );
@@ -611,7 +631,9 @@ function initializeThemeSwitcher() {
   purpleTheme.addEventListener("click", () =>
     setTheme("theme-purple", purpleTheme)
   );
-  blueTheme.addEventListener("click", () => setTheme("theme-blue", blueTheme));
+  blueTheme.addEventListener("click", () => 
+    setTheme("theme-blue", blueTheme)
+  );
   adminTheme.addEventListener("click", () => {
     if (!adminAuth || !adminAuth.isAuthenticated) {
       if (adminAuth && adminAuth.showModal) {
@@ -708,3 +730,28 @@ async function downloadCSV() {
     downloadButton.disabled = false;
   }
 }
+
+// Update dark mode toggle functionality
+const darkModeToggle = document.getElementById('darkModeToggle');
+const prefersDarkScheme = window.matchMedia('(prefers-color-scheme: dark)');
+
+// Check for saved dark mode preference or system preference
+const currentTheme = localStorage.getItem('theme');
+if (currentTheme === 'dark' || (!currentTheme && prefersDarkScheme.matches)) {
+    document.body.classList.add('dark-mode');
+    darkModeToggle.textContent = '🌞';  // Changed to sun icon
+}
+
+// Toggle dark mode
+darkModeToggle.addEventListener('click', () => {
+    document.body.classList.toggle('dark-mode');
+    
+    // Update button icon
+    if (document.body.classList.contains('dark-mode')) {
+        darkModeToggle.textContent = '🌞';  // Sun icon for dark mode
+        localStorage.setItem('theme', 'dark');
+    } else {
+        darkModeToggle.textContent = '🌙';  // Moon icon for light mode
+        localStorage.setItem('theme', 'light');
+    }
+});
