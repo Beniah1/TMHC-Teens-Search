@@ -448,11 +448,10 @@ select:focus {
 .fixed-buttons {
   position: fixed;
   bottom: 2rem;
+  right: 2rem;
   display: flex;
   z-index: 100;
-  width: 100%;
-  padding: 0 2rem;
-  justify-content: center;
+  justify-content: flex-end;
   pointer-events: none;
 }
 
@@ -507,7 +506,7 @@ select:focus {
 @media (max-width: 640px) {
   .fixed-buttons {
     bottom: 1rem;
-    padding: 0 1rem;
+    right: 1rem;
   }
 
   .buttons-glass-container {
@@ -935,4 +934,68 @@ select:focus {
   transform: translateZ(0);
   backface-visibility: hidden;
   perspective: 1000px;
+}
+
+/* Add category filter styles */
+.category-filter {
+  position: static;
+  margin: -1rem auto 2rem;
+  max-width: 42rem;
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.2),
+    rgba(255, 255, 255, 0.5)
+  );
+  padding: 1rem;
+  border-radius: 12px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  z-index: 2;
+}
+
+.category-filter select {
+  width: 100%;
+  padding: 1rem;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-radius: 12px;
+  font-size: 1rem;
+  background: rgba(255, 255, 255, 0.95);
+  cursor: pointer;
+  color: #357d39;
+  font-weight: 600;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.category-filter select:hover {
+  background: white;
+  border-color: #4caf50;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.category-filter select:focus {
+  outline: none;
+  border-color: #45a049;
+  background: white;
+  box-shadow: 0 0 0 3px rgba(69, 160, 73, 0.2);
+}
+
+.category-filter select option {
+  background: white;
+  color: #357d39;
+  padding: 1rem;
+}
+
+/* Update media queries */
+@media (max-width: 640px) {
+  .category-filter {
+    margin: -0.5rem auto 1.5rem;
+    padding: 0.75rem;
+  }
+
+  .category-filter select {
+    padding: 0.75rem;
+    font-size: 0.95rem;
+  }
 }

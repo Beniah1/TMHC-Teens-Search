@@ -25,23 +25,103 @@ const elements = {
   closeButton: document.getElementById("closeButton"),
   successToast: document.getElementById("successToast"),
   errorToast: document.getElementById("errorToast"),
+  categoryFilter: document.getElementById("categoryFilter"),
 };
 
 let editingId = null;
-let searchCache = new Map();
+let searchCache = {
+  data: new Map(),
+  timestamps: new Map(),
+
+  set: function (key, value) {
+    this.data.set(key, value);
+    this.timestamps.set(key, Date.now());
+  },
+
+  get: function (key) {
+    const timestamp = this.timestamps.get(key);
+    if (timestamp && Date.now() - timestamp < CACHE_DURATION) {
+      return this.data.get(key);
+    }
+    this.data.delete(key);
+    this.timestamps.delete(key);
+    return null;
+  },
+
+  clear: function () {
+    this.data.clear();
+    this.timestamps.clear();
+  },
+};
+
 let lastSearchTerm = "";
 let searchTimeout;
 
-// Optimized debounce function
+// Add performance constants
+const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes cache
+const DEBOUNCE_DELAY = 100;
+const BATCH_SIZE = 50;
+
+// First, update the debounce function
 function debounce(func, wait) {
-  return function (...args) {
-    clearTimeout(searchTimeout);
-    searchTimeout = setTimeout(() => func.apply(this, args), wait);
+  let timeout;
+  return function executedFunction(...args) {
+    const later = () => {
+      clearTimeout(timeout);
+      func(...args);
+    };
+    clearTimeout(timeout);
+    timeout = setTimeout(later, wait);
   };
 }
 
+// Then, update the search function
+const filterItems = debounce(async function () {
+  try {
+    const searchTerm = elements.searchInput.value.toLowerCase().trim();
+
+    if (!searchTerm) {
+      await loadInitialData();
+      return;
+    }
+
+    // Check cache
+    const cachedResults = searchCache.get(searchTerm);
+    if (cachedResults) {
+      displayItems(cachedResults);
+      return;
+    }
+
+    // If not in cache, fetch from database
+    const { data, error } = await supabase
+      .from("TMHCT_Feb")
+      .select("*")
+      .ilike("full_name", `%${searchTerm}%`)
+      .order("full_name");
+
+    if (error) throw error;
+
+    // Cache the results
+    searchCache.set(searchTerm, data || []);
+    displayItems(data || []);
+  } catch (error) {
+    console.error("Error searching:", error);
+    elements.cardsContainer.innerHTML =
+      '<p class="error-message">Error searching records</p>';
+  }
+}, 300); // Increased debounce time slightly for better performance
+
+// Update the event listener
+elements.searchInput.removeEventListener("input", filterItems); // Remove old listener if exists
+elements.searchInput.addEventListener("input", () => {
+  const searchTerm = elements.searchInput.value.trim();
+  if (searchTerm === lastSearchTerm) return; // Prevent unnecessary searches
+
+  lastSearchTerm = searchTerm;
+  filterItems();
+});
+
 // Optimized event listeners with delegation
-elements.searchInput.addEventListener("input", debounce(filterItems, 100)); // Reduced to 100ms
 elements.addButton.addEventListener("click", () => showModal());
 elements.cancelButton.addEventListener("click", handleCloseClick);
 elements.closeButton.addEventListener("click", handleCloseClick);
@@ -75,83 +155,67 @@ function addButtonPressAnimation(button) {
   });
 }
 
-// Optimized search function
-async function filterItems() {
-  const searchTerm = elements.searchInput.value.toLowerCase().trim();
-
-  if (!searchTerm) {
-    // If search is cleared, load all data
-    await loadInitialData();
-    return;
-  }
-
-  // Check cache first
-  if (searchCache.has(searchTerm)) {
-    requestAnimationFrame(() => displayItems(searchCache.get(searchTerm)));
-    return;
-  }
-
-  try {
-    const { data, error } = await supabase
-      .from("TMHCT_Feb")
-      .select("*")
-      .ilike("full_name", `%${searchTerm}%`);
-
-    if (error) throw error;
-
-    // Cache the results
-    searchCache.set(searchTerm, data || []);
-    displayItems(data || []);
-  } catch (error) {
-    console.error("Error searching:", error);
-    elements.cardsContainer.innerHTML =
-      '<p class="error-message">Error searching records</p>';
-  }
-}
-
-// Optimized display function
+// Optimized display function with batching
 function displayItems(items) {
   const fragment = document.createDocumentFragment();
+  const totalItems = items.length;
+  let processedItems = 0;
 
-  items.forEach((item) => {
-    const div = document.createElement("div");
-    div.className = "result-item";
-    const itemData = encodeURIComponent(JSON.stringify(item));
+  function processBatch() {
+    const batchEnd = Math.min(processedItems + BATCH_SIZE, totalItems);
 
-    div.innerHTML = `
-            <h3>${escapeHtml(item.full_name)}</h3>
-            <p>
-                <strong>Gender:</strong> ${escapeHtml(item.gender || "N/A")}<br>
-                <strong>Age:</strong> ${item.age || "N/A"}<br>
-                <strong>Phone:</strong> ${escapeHtml(
-                  item.phone_number || "N/A"
-                )}<br>
-                <strong>Level:</strong> ${escapeHtml(
-                  item.current_level || "N/A"
-                )}
-            </p>
-            <div class="attendance-section">
-                <strong>Attendance:</strong><br>
-                ${getAttendanceDisplay(item)}
-            </div>
-            <div class="flex gap-3 mt-3">
-                <button onclick="editItem('${itemData}')"
-                    class="search-button py-2 px-4 text-sm">
-                    Edit
-                </button>
-                <button onclick="deleteItem(${item.id})"
-                    class="bg-red-500 hover:bg-red-600 text-white py-2 px-4 rounded text-sm">
-                    Delete
-                </button>
-            </div>`;
+    for (let i = processedItems; i < batchEnd; i++) {
+      const item = items[i];
+      const div = document.createElement("div");
+      div.className = "result-item";
 
-    fragment.appendChild(div);
-  });
+      // Use template literals only once
+      const itemData = encodeURIComponent(JSON.stringify(item));
+      const itemHTML = getItemHTML(item, itemData);
 
-  requestAnimationFrame(() => {
-    elements.cardsContainer.innerHTML = "";
-    elements.cardsContainer.appendChild(fragment);
-  });
+      div.innerHTML = itemHTML;
+      fragment.appendChild(div);
+    }
+
+    processedItems = batchEnd;
+
+    if (processedItems < totalItems) {
+      requestAnimationFrame(processBatch);
+    } else {
+      elements.cardsContainer.innerHTML = "";
+      elements.cardsContainer.appendChild(fragment);
+    }
+  }
+
+  requestAnimationFrame(processBatch);
+}
+
+// Optimize item HTML generation
+function getItemHTML(item, itemData) {
+  return `
+        <h3>${escapeHtml(item.full_name)}</h3>
+        <p>
+            <strong>Gender:</strong> ${escapeHtml(item.gender || "N/A")}<br>
+            <strong>Age:</strong> ${item.age || "N/A"}<br>
+            <strong>Phone:</strong> ${escapeHtml(
+              item.phone_number || "N/A"
+            )}<br>
+            <strong>Level:</strong> ${escapeHtml(item.current_level || "N/A")}
+        </p>
+        <div class="attendance-section">
+            <strong>Attendance:</strong><br>
+            ${getAttendanceDisplay(item)}
+        </div>
+        <div class="flex gap-3 mt-3">
+            <button onclick="editItem('${itemData}')"
+                class="search-button py-2 px-4 text-sm">
+                Edit
+            </button>
+            <button onclick="deleteItem(${item.id})"
+                class="bg-red-500 hover:bg-red-600 text-white py-2 px-4 rounded text-sm">
+                Delete
+            </button>
+        </div>`;
 }
 
 // Function to show modal for adding/editing
@@ -186,73 +250,63 @@ async function handleSubmit(e) {
   const submitButton = e.target.querySelector('button[type="submit"]');
   submitButton.disabled = true;
 
-  // Pre-validate form data before sending
-  const formData = {
-    full_name: elements.nameInput.value.trim(),
-    gender: elements.genderInput.value,
-    phone_number: elements.phoneInput.value.trim(),
-    age: elements.ageInput.value ? parseInt(elements.ageInput.value) : null,
-    current_level: elements.levelInput.value,
-    attendance_2nd: elements.attendance5th.value || null,
-    attendance_9th: elements.attendance12th.value || null,
-    attendance_16th: elements.attendance19th.value || null,
-    attendance_23rd: elements.attendance26th.value || null,
-  };
-
-  if (!formData.full_name) {
-    showToast("error");
-    elements.nameInput.focus();
-    submitButton.disabled = false;
-    return;
-  }
-
   try {
-    // Start the database operation and UI update in parallel
-    const [dbPromise, uiPromise] = await Promise.all([
-      // Database operation
-      editingId
-        ? supabase.from("TMHCT_Feb").update(formData).eq("id", editingId)
-        : supabase.from("TMHCT_Feb").insert([formData]),
+    // Prepare form data efficiently
+    const formData = {
+      full_name: elements.nameInput.value.trim(),
+      gender: elements.genderInput.value,
+      phone_number: elements.phoneInput.value.trim(),
+      age: elements.ageInput.value ? parseInt(elements.ageInput.value) : null,
+      current_level: elements.levelInput.value,
+      attendance_2nd: elements.attendance5th.value || null,
+      attendance_9th: elements.attendance12th.value || null,
+      attendance_16th: elements.attendance19th.value || null,
+      attendance_23rd: elements.attendance26th.value || null,
+    };
 
-      // Start UI updates immediately
-      (async () => {
-        // Show success toast early
-        showToast("success");
-        // Start modal hiding animation
-        elements.modal.classList.add("closing");
-      })(),
-    ]);
+    if (!formData.full_name) {
+      showToast("error");
+      elements.nameInput.focus();
+      submitButton.disabled = false;
+      return;
+    }
 
-    if (dbPromise.error) throw dbPromise.error;
-
-    // Clear the cache since data has changed
-    searchCache.clear();
-
-    // Complete the modal hiding
+    // First hide the modal
     elements.modal.style.display = "none";
     elements.modal.classList.remove("closing");
     elements.infoForm.reset();
+
+    // Then perform the database operation
+    const { error } = editingId
+      ? await supabase.from("TMHCT_Feb").update(formData).eq("id", editingId)
+      : await supabase.from("TMHCT_Feb").insert([formData]);
+
+    if (error) throw error;
+
+    // Show success message after successful save
+    showToast("success");
+    
+    // Clear cache and update display
+    searchCache.clear();
     editingId = null;
 
-    // Update display based on current search state
-    const currentSearch = elements.searchInput.value.trim();
-    if (currentSearch) {
-      await filterItems();
-    } else if (editingId) {
-      const { data } = await supabase
-        .from("TMHCT_Feb")
-        .select("*")
-        .eq("id", editingId)
-        .single();
+    // Update display in background
+    setTimeout(() => {
+      const currentSearch = elements.searchInput.value.trim();
+      if (currentSearch) {
+        filterItems();
+      } else {
+        loadInitialData();
+      }
+      // Update stats in background
+      fetchAndDisplayStats().catch(console.error);
+    }, 0);
 
-      if (data) displayItems([data]);
-    }
-
-    // Update statistics in the background
-    fetchAndDisplayStats().catch(console.error);
   } catch (error) {
     console.error("Error:", error);
     showToast("error");
+    // Reopen modal if there's an error
+    elements.modal.style.display = "block";
   } finally {
     submitButton.disabled = false;
   }
@@ -350,13 +404,14 @@ function getAttendanceDisplay(item) {
 // Function to load initial data
 async function loadInitialData() {
   try {
-    const { data, error } = await supabase
-      .from("TMHCT_Feb")
-      .select("*")
-      .order("full_name");
+    const urlParams = new URLSearchParams(window.location.search);
+    const category = urlParams.get("category") || "all";
 
-    if (error) throw error;
-    displayItems(data || []);
+    // Set the select element to match the URL parameter
+    elements.categoryFilter.value = category;
+
+    // Filter by the category from URL
+    await filterByCategory(category);
     await fetchAndDisplayStats();
   } catch (error) {
     console.error("Error loading data:", error);
@@ -449,5 +504,56 @@ function toggleStatContent(header) {
   } else {
     content.style.maxHeight = content.scrollHeight + "px";
     arrow.textContent = "▲";
+  }
+}
+
+// Add this function to handle category filtering
+async function filterByCategory(category) {
+  try {
+    let query = supabase.from("TMHCT_Feb").select("*").order("full_name");
+
+    if (category !== "all") {
+      if (category === "SHS") {
+        query = query.or(
+          "current_level.eq.SHS1,current_level.eq.SHS2,current_level.eq.SHS3"
+        );
+      } else if (category === "JHS") {
+        query = query.or(
+          "current_level.eq.JHS1,current_level.eq.JHS2,current_level.eq.JHS3"
+        );
+      } else {
+        query = query.eq("current_level", category);
+      }
+    }
+
+    const { data, error } = await query;
+
+    if (error) throw error;
+
+    // Animate out old items
+    const oldItems = elements.cardsContainer.children;
+    Array.from(oldItems).forEach((item, index) => {
+      item.style.transition = "all 0.2s ease";
+      item.style.opacity = "0";
+      item.style.transform = "scale(0.95)";
+    });
+
+    // Wait for animation
+    await new Promise((resolve) => setTimeout(resolve, 200));
+
+    // Display new items with animation
+    displayItems(data || []);
+
+    // Update the URL to reflect the current filter
+    const urlParams = new URLSearchParams(window.location.search);
+    urlParams.set("category", category);
+    window.history.replaceState(
+      {},
+      "",
+      `${window.location.pathname}?${urlParams}`
+    );
+  } catch (error) {
+    console.error("Error filtering by category:", error);
+    showToast("error");
   }
 }
