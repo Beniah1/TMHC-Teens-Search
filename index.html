@@ -42,21 +42,33 @@
                 <ul class="list-disc pl-5 text-gray-700 space-y-2">
                     <li>Type a name in the search box below to find specific records</li>
                     <li>Click the green + button in the bottom right to add new information</li>
-                    <li>Click the blue download button to download the data in CSV format</li>
-                    <li>Use the color buttons at the top to switch between different themes:
+                    <!-- <li>Click the blue download button to download the data in CSV format</li> -->
+                    <!-- <li>Use the color buttons at the top to switch between different themes:
                         <ul class="list-circle pl-5 mt-1">
                             <li>🟩 Green - Default theme</li>
                             <li>🟪Purple - Purple & Black theme</li>
                             <li>🟦Blue - Blue & Gold theme</li>
                             <li>🔒Lock icon - Admin theme (requires password)</li>
                         </ul>
-                    </li>
-                    <li>Toggle between light and dark mode using the moon icon 🌙/🌞</li>
+                    </li> -->
+                    <!-- <li>Toggle between light and dark mode using the moon icon 🌙/🌞</li> -->
                 </ul>
             </div>
         </div>
 
-        <!-- Search Section - Moved here -->
+        <!-- Cards Container - Moved above search section -->
+        <div class="relative bg-white/10 rounded-lg mb-4">
+            <div id="cardsContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 
+                overflow-y-auto overscroll-contain 
+                max-h-[300px] sm:max-h-[400px] md:max-h-[500px] 
+                p-3 sm:p-4
+                transform-gpu will-change-scroll
+                scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-transparent">
+                <!-- Cards will be dynamically added here -->
+            </div>
+        </div>
+
+        <!-- Search Section -->
         <div class="search-section">
             <div class="w-full max-w-2xl mx-auto">
                 <input type="text" id="searchInput" placeholder="Start typing to search names..." class="w-full">
@@ -128,11 +140,6 @@
                     <span class="logout-icon">🔒</span>
                 </button>
             </div>
-        </div>
-
-        <!-- Cards Container -->
-        <div id="cardsContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            <!-- Cards will be dynamically added here -->
         </div>
 
         <!-- Add and Download Buttons -->
