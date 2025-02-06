@@ -389,22 +389,13 @@ function getItemHTML(item, itemData) {
   return `
     <div class="result-item">
       <h3>
-        <div class="button-container">
-          <button onclick="editItem('${itemData}')" class="search-button">
-            Edit
-          </button>
-          <button onclick="deleteItem(${
-            item.id
-          })" class="bg-red-500 hover:bg-red-600 text-white font-medium px-4 py-2 rounded-lg">
-            Delete
-          </button>
-        </div>
         <div class="name-text editable-field" onclick="makeFieldEditable(this, ${
           item.id
         }, 'full_name')">
           ${escapeHtml(item.full_name)}
         </div>
       </h3>
+
       <p class="editable-field" onclick="makeFieldEditable(this, ${
         item.id
       }, 'gender')">
@@ -588,46 +579,6 @@ function escapeHtml(unsafe) {
     .replace(/>/g, "&gt;")
     .replace(/"/g, "&quot;")
     .replace(/'/g, "&#039;");
-}
-
-// Function to handle edit button click
-function editItem(itemData) {
-  try {
-    const item = JSON.parse(decodeURIComponent(itemData));
-    showModal(item);
-  } catch (error) {
-    console.error("Error parsing item data:", error);
-    showToast("error");
-  }
-}
-
-// Function to handle delete button click
-async function deleteItem(id) {
-  if (!confirm("Are you sure you want to delete this record?")) return;
-
-  try {
-    const { error } = await supabase.from("TMHCT_Feb").delete().eq("id", id);
-
-    if (error) throw error;
-
-    // Clear the cache since data has changed
-    searchCache.clear();
-    showToast("success");
-
-    // Refresh the display
-    const currentSearch = elements.searchInput.value.trim();
-    if (currentSearch) {
-      await filterItems();
-    } else {
-      await loadInitialData();
-    }
-
-    // Refresh the statistics
-    await fetchAndDisplayStats();
-  } catch (error) {
-    console.error("Error deleting record:", error);
-    showToast("error");
-  }
 }
 
 // Function to get attendance display
