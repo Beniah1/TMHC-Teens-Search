@@ -947,7 +947,20 @@ darkModeToggle.addEventListener("click", () => {
 
 // Update the showDropdownEdit function with the new button-based design
 function showDropdownEdit(element, field) {
-  const currentValue = element.textContent.trim();
+  // Get the item ID from the closest result-item parent
+  const resultItem = element.closest('.result-item');
+  if (!resultItem) {
+    console.error('Could not find parent result item');
+    return;
+  }
+  
+  const itemId = resultItem.getAttribute('data-id');
+  if (!itemId) {
+    console.error('No item ID found');
+    return;
+  }
+
+  const currentValue = element.textContent.split(': ')[1]?.trim() || element.textContent.trim();
   const container = document.createElement("div");
   container.className = "selection-container";
 
@@ -956,8 +969,6 @@ function showDropdownEdit(element, field) {
     options = ["Male", "Female"];
   } else if (field === "level") {
     options = ["SHS1", "SHS2", "SHS3", "JHS1", "JHS2", "JHS3", "COMP", "UNI"];
-  } else if (field.startsWith("attendance_")) {
-    options = ["Present", "Absent"];
   }
 
   // Create buttons for each option
@@ -969,45 +980,56 @@ function showDropdownEdit(element, field) {
     }
     button.textContent = opt;
 
-    // Add appropriate color classes for attendance
-    if (field.startsWith("attendance_")) {
-      button.classList.add(opt.toLowerCase());
-    }
-
     button.addEventListener("click", async () => {
       try {
+        // Show loading state
+        button.disabled = true;
+        const originalText = button.textContent;
+        button.textContent = "Updating...";
+
+        // Prepare update data
         const updateData = {};
         if (field === "gender") {
           updateData.gender = opt;
         } else if (field === "level") {
           updateData.current_level = opt;
-        } else if (field.startsWith("attendance_")) {
-          updateData[field] = opt;
         }
 
-        const { error } = await supabase
+        console.log('Updating item:', itemId, 'with data:', updateData);
+
+        // Perform the update
+        const { data, error } = await supabase
           .from("TMHCT_Feb")
           .update(updateData)
-          .eq("id", element.closest(".result-item").dataset.id);
+          .eq("id", itemId)
+          .select();
 
-        if (error) throw error;
-
-        // Update the display
-        if (field.startsWith("attendance_")) {
-          element.innerHTML = opt;
-          element.className = `editable-field attendance-field attendance-value ${opt.toLowerCase()}`;
-        } else {
-          // For gender and level, preserve the label
-          const label = field.charAt(0).toUpperCase() + field.slice(1);
-          element.innerHTML = `<strong>${label}:</strong> ${opt}`;
+        if (error) {
+          throw error;
         }
 
+        // Update the display
+        const label = field.charAt(0).toUpperCase() + field.slice(1);
+        element.innerHTML = `<strong>${label}:</strong> ${opt}`;
+        
+        // Show success message
         showToast("success", "Updated successfully");
+        
+        // Clear cache and update stats
         searchCache.clear();
         await fetchAndDisplayStats();
+
       } catch (error) {
         console.error("Error updating:", error);
         showToast("error", "Failed to update");
+        
+        // Restore original content
+        const label = field.charAt(0).toUpperCase() + field.slice(1);
+        element.innerHTML = `<strong>${label}:</strong> ${currentValue}`;
+      } finally {
+        // Reset button state
+        button.disabled = false;
+        button.textContent = originalText;
       }
     });
 
@@ -1019,26 +1041,15 @@ function showDropdownEdit(element, field) {
   cancelButton.className = "selection-button cancel";
   cancelButton.textContent = "Cancel";
   cancelButton.addEventListener("click", () => {
-    // Add closing animation class
     container.classList.add("closing");
-
-    // After animation completes, restore original content
     setTimeout(() => {
-      if (field.startsWith("attendance_")) {
-        element.innerHTML = currentValue;
-        element.className = `editable-field attendance-field attendance-value ${
-          currentValue.toLowerCase() === "present" ? "present" : "absent"
-        }`;
-      } else {
-        // For gender and level, preserve the label
-        const label = field.charAt(0).toUpperCase() + field.slice(1);
-        element.innerHTML = `<strong>${label}:</strong> ${currentValue}`;
-      }
-    }, 200); // Match this with the CSS animation duration
+      const label = field.charAt(0).toUpperCase() + field.slice(1);
+      element.innerHTML = `<strong>${label}:</strong> ${currentValue}`;
+    }, 200);
   });
   container.appendChild(cancelButton);
 
-  // Save the original content and replace with the selection interface
+  // Replace content with selection interface
   element.innerHTML = "";
   element.appendChild(container);
 }
