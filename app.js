@@ -193,33 +193,56 @@ function displayItems(items) {
 // Optimize item HTML generation
 function getItemHTML(item, itemData) {
   return `
-        <div class="result-item">
+        <div class="result-item" data-id="${item.id}">
             <h3>
-                <div class="button-container">
-                    <button onclick="editItem('${itemData}')" class="search-button">
-                        Edit
-                    </button>
-                    <button onclick="deleteItem(${
-                      item.id
-                    })" class="bg-red-500 hover:bg-red-600 text-white font-medium px-4 py-2 rounded-lg">
-                        Delete
-                    </button>
-                </div>
                 <div class="name-text">${escapeHtml(item.full_name)}</div>
             </h3>
-            <p>
-                <strong>Gender:</strong> ${escapeHtml(item.gender || "N/A")}<br>
-                <strong>Age:</strong> ${item.age || "N/A"}<br>
-                <strong>Phone:</strong> ${escapeHtml(
-                  item.phone_number || "N/A"
-                )}<br>
-                <strong>Level:</strong> ${escapeHtml(
-                  item.current_level || "N/A"
-                )}
+            <p class="editable-fields">
+                <strong>Gender:</strong> 
+                <span class="editable-field gender-field" onclick="showDropdownEdit(this, 'gender')">
+                    ${escapeHtml(item.gender || "N/A")}
+                </span><br>
+                <strong>Age:</strong> 
+                <span class="editable-field age-field" onclick="showInlineEdit(this, 'age')">
+                    ${item.age || "N/A"}
+                </span><br>
+                <strong>Phone:</strong> 
+                <span class="editable-field phone-field" onclick="showInlineEdit(this, 'phone')">
+                    ${escapeHtml(item.phone_number || "N/A")}
+                </span><br>
+                <strong>Level:</strong> 
+                <span class="editable-field level-field" onclick="showDropdownEdit(this, 'level')">
+                    ${escapeHtml(item.current_level || "N/A")}
+                </span>
             </p>
             <div class="attendance-section">
-                <strong>Attendance:</strong><br>
-                ${getAttendanceDisplay(item)}
+                <strong>Attendance:</strong>
+                <div class="attendance-grid">
+                    <div class="attendance-item">
+                        <span>2nd:</span>
+                        <span class="editable-field attendance-field" onclick="showDropdownEdit(this, 'attendance_2nd')">
+                            ${item.attendance_2nd || "N/A"}
+                        </span>
+                    </div>
+                    <div class="attendance-item">
+                        <span>9th:</span>
+                        <span class="editable-field attendance-field" onclick="showDropdownEdit(this, 'attendance_9th')">
+                            ${item.attendance_9th || "N/A"}
+                        </span>
+                    </div>
+                    <div class="attendance-item">
+                        <span>16th:</span>
+                        <span class="editable-field attendance-field" onclick="showDropdownEdit(this, 'attendance_16th')">
+                            ${item.attendance_16th || "N/A"}
+                        </span>
+                    </div>
+                    <div class="attendance-item">
+                        <span>23rd:</span>
+                        <span class="editable-field attendance-field" onclick="showDropdownEdit(this, 'attendance_23rd')">
+                            ${item.attendance_23rd || "N/A"}
+                        </span>
+                    </div>
+                </div>
             </div>
         </div>`;
 }
@@ -455,7 +478,7 @@ async function fetchAndDisplayStats() {
     document.getElementById("totalBoys").textContent = genderCounts.boys;
     document.getElementById("totalGirls").textContent = genderCounts.girls;
 
-    // Define the order of levels
+    // Define the order of levels with shortened names
     const levelOrder = [
       "SHS1",
       "SHS2",
@@ -463,8 +486,8 @@ async function fetchAndDisplayStats() {
       "JHS1",
       "JHS2",
       "JHS3",
-      "COMPLETED",
-      "UNIVERSITY",
+      "COMP",
+      "UNI",
     ];
 
     // Initialize counts for all levels
@@ -754,3 +777,156 @@ darkModeToggle.addEventListener("click", () => {
     localStorage.setItem("theme", "light");
   }
 });
+
+// Add these new functions for inline editing
+function showInlineEdit(element, field) {
+  const currentValue = element.textContent.trim();
+  const input = document.createElement("input");
+  input.type = field === "age" ? "number" : "text";
+  input.value = currentValue === "N/A" ? "" : currentValue;
+  input.className = "inline-edit-input";
+
+  // Save the original content
+  const originalContent = element.innerHTML;
+
+  // Create a container for the input
+  const container = document.createElement("div");
+  container.className = "inline-edit-container";
+
+  // Replace the content with the input
+  element.innerHTML = "";
+  container.appendChild(input);
+  element.appendChild(container);
+  input.focus();
+
+  let updateTimeout;
+
+  // Handle input changes with debounce
+  input.addEventListener("input", () => {
+    clearTimeout(updateTimeout);
+    updateTimeout = setTimeout(async () => {
+      const newValue = input.value.trim();
+      if (newValue === currentValue) return;
+
+      try {
+        const updateData = {};
+        if (field === "age") {
+          updateData.age = newValue ? parseInt(newValue) : null;
+        } else if (field === "phone") {
+          updateData.phone_number = newValue || null;
+        }
+
+        const { error } = await supabase
+          .from("TMHCT_Feb")
+          .update(updateData)
+          .eq("id", element.closest(".result-item").dataset.id);
+
+        if (error) throw error;
+
+        element.innerHTML = newValue || "N/A";
+        showToast("success");
+        searchCache.clear();
+        await fetchAndDisplayStats();
+      } catch (error) {
+        console.error("Error updating:", error);
+        element.innerHTML = originalContent;
+        showToast("error");
+      }
+    }, 1000); // Wait for 1 second after user stops typing
+  });
+
+  // Handle blur and escape
+  input.addEventListener("blur", () => {
+    clearTimeout(updateTimeout);
+    if (input.value.trim() === currentValue) {
+      element.innerHTML = originalContent;
+    }
+  });
+
+  input.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") {
+      clearTimeout(updateTimeout);
+      element.innerHTML = originalContent;
+    }
+  });
+}
+
+function showDropdownEdit(element, field) {
+  const currentValue = element.textContent.trim();
+  const container = document.createElement("div");
+  container.className = "selection-container";
+
+  let options;
+  if (field === "gender") {
+    options = ["Male", "Female"];
+  } else if (field === "level") {
+    options = ["SHS1", "SHS2", "SHS3", "JHS1", "JHS2", "JHS3", "COMP", "UNI"];
+  } else if (field.startsWith("attendance_")) {
+    options = ["Present", "Absent"];
+  }
+
+  // Create buttons for each option
+  options.forEach((opt) => {
+    const button = document.createElement("button");
+    button.className = "selection-button";
+    if (opt === currentValue) {
+      button.classList.add("selected");
+    }
+    button.textContent = opt;
+
+    // Add appropriate color classes for attendance
+    if (field.startsWith("attendance_")) {
+      button.classList.add(opt.toLowerCase());
+    }
+
+    button.addEventListener("click", async () => {
+      try {
+        const updateData = {};
+        if (field === "gender") {
+          updateData.gender = opt;
+        } else if (field === "level") {
+          updateData.current_level = opt;
+        } else if (field.startsWith("attendance_")) {
+          updateData[field] = opt;
+        }
+
+        const { error } = await supabase
+          .from("TMHCT_Feb")
+          .update(updateData)
+          .eq("id", element.closest(".result-item").dataset.id);
+
+        if (error) throw error;
+
+        // Update the display
+        if (field.startsWith("attendance_")) {
+          element.innerHTML = opt;
+          element.className = `editable-field attendance-field attendance-value ${opt.toLowerCase()}`;
+        } else {
+          element.innerHTML = opt;
+        }
+
+        showToast("success");
+        searchCache.clear();
+        await fetchAndDisplayStats();
+      } catch (error) {
+        console.error("Error updating:", error);
+        showToast("error");
+      }
+    });
+
+    container.appendChild(button);
+  });
+
+  // Add a cancel button
+  const cancelButton = document.createElement("button");
+  cancelButton.className = "selection-button cancel";
+  cancelButton.textContent = "Cancel";
+  cancelButton.addEventListener("click", () => {
+    element.innerHTML = currentValue;
+  });
+  container.appendChild(cancelButton);
+
+  // Save the original content and replace with the selection interface
+  element.innerHTML = "";
+  element.appendChild(container);
+}
