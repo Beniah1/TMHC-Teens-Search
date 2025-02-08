@@ -395,89 +395,81 @@ function showToast(type, message) {
 // Update the getItemHTML function to make fields directly editable
 function getItemHTML(item) {
   return `
-    <h3>
-        <div class="name-text editable-field" onclick="makeFieldEditable(this, ${
+    <h3 class="name-text editable-field" onclick="makeFieldEditable(this, ${
+      item.id
+    }, 'full_name')">${escapeHtml(item.full_name)}</h3>
+    <div class="info-item">
+        <span>Gender:</span>
+        <select class="info-select ${
+          item.gender?.toLowerCase() === "male"
+            ? "male"
+            : item.gender?.toLowerCase() === "female"
+            ? "female"
+            : ""
+        }" 
+                onchange="updateField(this, 'gender', this.value, ${item.id})">
+            <option value="" disabled ${
+              !item.gender ? "selected" : ""
+            }>Select Gender</option>
+            <option value="Male" ${
+              item.gender === "Male" ? "selected" : ""
+            }>Male</option>
+            <option value="Female" ${
+              item.gender === "Female" ? "selected" : ""
+            }>Female</option>
+        </select>
+    </div>
+    <div class="info-item">
+        <span>Current Level:</span>
+        <select class="info-select ${item.current_level ? "has-value" : ""}" 
+                onchange="updateField(this, 'current_level', this.value, ${
+                  item.id
+                })">
+            <option value="" disabled ${
+              !item.current_level ? "selected" : ""
+            }>Select Current Level</option>
+            <option value="SHS1" ${
+              item.current_level === "SHS1" ? "selected" : ""
+            }>SHS1</option>
+            <option value="SHS2" ${
+              item.current_level === "SHS2" ? "selected" : ""
+            }>SHS2</option>
+            <option value="SHS3" ${
+              item.current_level === "SHS3" ? "selected" : ""
+            }>SHS3</option>
+            <option value="JHS1" ${
+              item.current_level === "JHS1" ? "selected" : ""
+            }>JHS1</option>
+            <option value="JHS2" ${
+              item.current_level === "JHS2" ? "selected" : ""
+            }>JHS2</option>
+            <option value="JHS3" ${
+              item.current_level === "JHS3" ? "selected" : ""
+            }>JHS3</option>
+            <option value="COMPLETED" ${
+              item.current_level === "COMPLETED" ? "selected" : ""
+            }>COMPLETED</option>
+            <option value="UNIVERSITY" ${
+              item.current_level === "UNIVERSITY" ? "selected" : ""
+            }>UNIVERSITY</option>
+        </select>
+    </div>
+    <div class="info-item">
+        <span>Age:</span>
+        <span class="editable-field" onclick="makeFieldEditable(this, ${
           item.id
-        }, 'full_name')">${escapeHtml(item.full_name)}</div>
-    </h3>
-    <p>
-        <div class="info-item">
-            <span>Gender:</span>
-            <select class="info-select ${
-              item.gender?.toLowerCase() === "male"
-                ? "male"
-                : item.gender?.toLowerCase() === "female"
-                ? "female"
-                : ""
-            }" 
-                    onchange="updateField(this, 'gender', this.value, ${
-                      item.id
-                    })">
-                <option value="" disabled ${
-                  !item.gender ? "selected" : ""
-                }>Select Gender</option>
-                <option value="Male" ${
-                  item.gender === "Male" ? "selected" : ""
-                }>Male</option>
-                <option value="Female" ${
-                  item.gender === "Female" ? "selected" : ""
-                }>Female</option>
-            </select>
-        </div>
-        <div class="info-item">
-            <span>Current Level:</span>
-            <select class="info-select ${
-              item.current_level ? "has-value" : ""
-            }" 
-                    onchange="updateField(this, 'current_level', this.value, ${
-                      item.id
-                    })">
-                <option value="" disabled ${
-                  !item.current_level ? "selected" : ""
-                }>Select Current Level</option>
-                <option value="SHS1" ${
-                  item.current_level === "SHS1" ? "selected" : ""
-                }>SHS1</option>
-                <option value="SHS2" ${
-                  item.current_level === "SHS2" ? "selected" : ""
-                }>SHS2</option>
-                <option value="SHS3" ${
-                  item.current_level === "SHS3" ? "selected" : ""
-                }>SHS3</option>
-                <option value="JHS1" ${
-                  item.current_level === "JHS1" ? "selected" : ""
-                }>JHS1</option>
-                <option value="JHS2" ${
-                  item.current_level === "JHS2" ? "selected" : ""
-                }>JHS2</option>
-                <option value="JHS3" ${
-                  item.current_level === "JHS3" ? "selected" : ""
-                }>JHS3</option>
-                <option value="COMPLETED" ${
-                  item.current_level === "COMPLETED" ? "selected" : ""
-                }>COMPLETED</option>
-                <option value="UNIVERSITY" ${
-                  item.current_level === "UNIVERSITY" ? "selected" : ""
-                }>UNIVERSITY</option>
-            </select>
-        </div>
-        <div class="info-item">
-            <span>Age:</span>
-            <span class="editable-field" onclick="makeFieldEditable(this, ${
-              item.id
-            }, 'age')">
-                ${item.age || "N/A"}
-            </span>
-        </div>
-        <div class="info-item">
-            <span>Phone Number:</span>
-            <span class="editable-field" onclick="makeFieldEditable(this, ${
-              item.id
-            }, 'phone_number')">
-                ${escapeHtml(item.phone_number || "N/A")}
-            </span>
-        </div>
-    </p>
+        }, 'age')">
+            ${item.age || "N/A"}
+        </span>
+    </div>
+    <div class="info-item">
+        <span>Phone Number:</span>
+        <span class="editable-field" onclick="makeFieldEditable(this, ${
+          item.id
+        }, 'phone_number')">
+            ${escapeHtml(item.phone_number || "N/A")}
+        </span>
+    </div>
     <div class="attendance-section">
         <strong>Attendance:</strong><br>
         <div class="attendance-grid">
