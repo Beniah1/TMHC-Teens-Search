@@ -190,59 +190,230 @@ function displayItems(items) {
   requestAnimationFrame(processBatch);
 }
 
-// Optimize item HTML generation
+// Function to handle inline editing
+async function makeFieldEditable(element, itemId, fieldName) {
+  // Don't allow editing if already in edit mode
+  if (element.classList.contains("editing")) return;
+
+  // Add editing class for visual feedback
+  element.classList.add("editable-field", "editing");
+
+  // Get the current value differently for attendance fields
+  let currentValue;
+  if (fieldName.startsWith("attendance_")) {
+    currentValue =
+      element.querySelector(".attendance-value")?.textContent.trim() || "N/A";
+  } else {
+    currentValue =
+      element.textContent.split(": ")[1]?.trim() || element.textContent.trim();
+  }
+
+  let input;
+
+  // Create appropriate input based on field type
+  switch (fieldName) {
+    case "gender":
+      input = createSelect(["Male", "Female"], currentValue);
+      break;
+    case "age":
+      input = createInput("number", currentValue, { min: "0" });
+      break;
+    case "current_level":
+      input = createSelect(
+        [
+          "NON",
+          "SHS1",
+          "SHS2",
+          "SHS3",
+          "JHS1",
+          "JHS2",
+          "COMPLETED",
+          "UNIVERSITY",
+        ],
+        currentValue
+      );
+
+      break;
+    case fieldName.match(/^attendance_/)?.input:
+      input = createSelect(["Present", "Absent"], currentValue);
+      break;
+    default:
+      input = createInput("text", currentValue);
+  }
+
+  // Store original content for restoration if needed
+  const originalContent = element.innerHTML;
+  const label = element.querySelector("strong")?.textContent || "";
+
+  // Clear and populate with input
+  element.innerHTML = "";
+  if (label) {
+    element.appendChild(document.createElement("strong")).textContent =
+      label + ": ";
+  }
+  element.appendChild(input);
+
+  // Focus the input with a slight delay for animation
+  requestAnimationFrame(() => input.focus());
+
+  // Handle save operation
+  async function saveChanges() {
+    const newValue = input.value.trim();
+    if (newValue === currentValue) {
+      element.innerHTML = originalContent;
+      element.classList.remove("editing");
+      return;
+    }
+
+    // Add loading state
+    element.classList.add("loading");
+
+    try {
+      const updateData = { [fieldName]: newValue || null };
+      const { error } = await supabase
+        .from("TMHCT_Feb")
+        .update(updateData)
+        .eq("id", itemId);
+
+      if (error) throw error;
+
+      // Remove editing and loading states
+      element.classList.remove("editing", "loading");
+
+      // Update display with success animation
+      if (fieldName.startsWith("attendance_")) {
+        // Special handling for attendance fields
+        element.innerHTML = `
+          <span>${fieldName.split("_")[1]}:</span>
+          <span class="attendance-value ${
+            newValue.toLowerCase() === "present" ? "present" : "absent"
+          }">
+            ${newValue || "N/A"}
+          </span>
+        `;
+      } else {
+        // Regular fields
+        if (label) {
+          element.innerHTML = `<strong>${label}:</strong> ${newValue || "N/A"}`;
+        } else {
+          element.textContent = newValue || "N/A";
+        }
+      }
+
+      // Add success animation
+      element.classList.add("save-success");
+      setTimeout(() => element.classList.remove("save-success"), 400);
+
+      // Show success notification
+      showToast("success", "Updated successfully");
+
+      // Update cache and stats
+      searchCache.clear();
+      fetchAndDisplayStats();
+    } catch (error) {
+      console.error("Error updating field:", error);
+      element.innerHTML = originalContent;
+      element.classList.remove("editing", "loading");
+      showToast("error", "Failed to update");
+    }
+  }
+
+  // Event listeners for input
+  input.addEventListener("blur", saveChanges);
+  input.addEventListener("keydown", (e) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      input.blur();
+    } else if (e.key === "Escape") {
+      e.preventDefault();
+      element.innerHTML = originalContent;
+      element.classList.remove("editing");
+    }
+  });
+}
+
+// Helper function to create select element
+function createSelect(options, currentValue) {
+  const select = document.createElement("select");
+  options.forEach((option) => {
+    const opt = document.createElement("option");
+    opt.value = option;
+    opt.textContent = option;
+    if (option === currentValue) opt.selected = true;
+    select.appendChild(opt);
+  });
+  return select;
+}
+
+// Helper function to create input element
+function createInput(type, value, attributes = {}) {
+  const input = document.createElement("input");
+  input.type = type;
+  input.value = value === "N/A" ? "" : value;
+  Object.entries(attributes).forEach(([key, value]) => {
+    input.setAttribute(key, value);
+  });
+  return input;
+}
+
+// Enhanced toast notification
+function showToast(type, message) {
+  const toast =
+    type === "success" ? elements.successToast : elements.errorToast;
+
+  // Update toast content with icon
+  toast.innerHTML = `
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      ${
+        type === "success"
+          ? '<path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"></path>'
+          : '<path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"></path>'
+      }
+    </svg>
+    <span>${message}</span>
+  `;
+
+  // Show toast with animation
+  requestAnimationFrame(() => {
+    toast.classList.add("show");
+    setTimeout(() => {
+      requestAnimationFrame(() => {
+        toast.classList.remove("show");
+      });
+    }, 2000);
+  });
+}
+
+// Update the getItemHTML function to correctly pass the item ID
 function getItemHTML(item, itemData) {
   return `
-        <div class="result-item" data-id="${item.id}">
+        <div class="result-item">
             <h3>
+                <div class="button-container">
+                    <button onclick="editItem('${itemData}')" class="search-button">
+                        Edit
+                    </button>
+                    <button onclick="deleteItem(${
+                      item.id
+                    })" class="bg-red-500 hover:bg-red-600 text-white font-medium px-4 py-2 rounded-lg">
+                        Delete
+                    </button>
+                </div>
                 <div class="name-text">${escapeHtml(item.full_name)}</div>
             </h3>
-            <p class="editable-fields">
-                <strong>Gender:</strong> 
-                <span class="editable-field gender-field" onclick="showDropdownEdit(this, 'gender')">
-                    ${escapeHtml(item.gender || "N/A")}
-                </span><br>
-                <strong>Age:</strong> 
-                <span class="editable-field age-field" onclick="showInlineEdit(this, 'age')">
-                    ${item.age || "N/A"}
-                </span><br>
-                <strong>Phone:</strong> 
-                <span class="editable-field phone-field" onclick="showInlineEdit(this, 'phone')">
-                    ${escapeHtml(item.phone_number || "N/A")}
-                </span><br>
-                <strong>Level:</strong> 
-                <span class="editable-field level-field" onclick="showDropdownEdit(this, 'level')">
-                    ${escapeHtml(item.current_level || "N/A")}
-                </span>
+            <p>
+                <strong>Gender:</strong> ${escapeHtml(item.gender || "N/A")}<br>
+                <strong>Age:</strong> ${item.age || "N/A"}<br>
+                <strong>Phone:</strong> ${escapeHtml(
+                  item.phone_number || "N/A"
+                )}<br>
+                <strong>Level:</strong> ${escapeHtml(
+                  item.current_level || "N/A"
+                )}
             </p>
             <div class="attendance-section">
-                <strong>Attendance:</strong>
-                <div class="attendance-grid">
-                    <div class="attendance-item">
-                        <span>2nd:</span>
-                        <span class="editable-field attendance-field" onclick="showDropdownEdit(this, 'attendance_2nd')">
-                            ${item.attendance_2nd || "N/A"}
-                        </span>
-                    </div>
-                    <div class="attendance-item">
-                        <span>9th:</span>
-                        <span class="editable-field attendance-field" onclick="showDropdownEdit(this, 'attendance_9th')">
-                            ${item.attendance_9th || "N/A"}
-                        </span>
-                    </div>
-                    <div class="attendance-item">
-                        <span>16th:</span>
-                        <span class="editable-field attendance-field" onclick="showDropdownEdit(this, 'attendance_16th')">
-                            ${item.attendance_16th || "N/A"}
-                        </span>
-                    </div>
-                    <div class="attendance-item">
-                        <span>23rd:</span>
-                        <span class="editable-field attendance-field" onclick="showDropdownEdit(this, 'attendance_23rd')">
-                            ${item.attendance_23rd || "N/A"}
-                        </span>
-                    </div>
-                </div>
+                <strong>Attendance:</strong><br>
+                ${getAttendanceDisplay(item)}
             </div>
         </div>`;
 }
@@ -346,20 +517,6 @@ async function handleSubmit(e) {
   }
 }
 
-// Update the showToast function
-function showToast(type) {
-  const toast =
-    type === "success" ? elements.successToast : elements.errorToast;
-  requestAnimationFrame(() => {
-    toast.classList.add("show");
-    setTimeout(() => {
-      requestAnimationFrame(() => {
-        toast.classList.remove("show");
-      });
-    }, 3000); // Increased to 3 seconds for better readability
-  });
-}
-
 // Helper function to escape HTML content
 function escapeHtml(unsafe) {
   if (unsafe == null) return "";
@@ -370,46 +527,6 @@ function escapeHtml(unsafe) {
     .replace(/>/g, "&gt;")
     .replace(/"/g, "&quot;")
     .replace(/'/g, "&#039;");
-}
-
-// Function to handle edit button click
-function editItem(itemData) {
-  try {
-    const item = JSON.parse(decodeURIComponent(itemData));
-    showModal(item);
-  } catch (error) {
-    console.error("Error parsing item data:", error);
-    showToast("error");
-  }
-}
-
-// Function to handle delete button click
-async function deleteItem(id) {
-  if (!confirm("Are you sure you want to delete this record?")) return;
-
-  try {
-    const { error } = await supabase.from("TMHCT_Feb").delete().eq("id", id);
-
-    if (error) throw error;
-
-    // Clear the cache since data has changed
-    searchCache.clear();
-    showToast("success");
-
-    // Refresh the display
-    const currentSearch = elements.searchInput.value.trim();
-    if (currentSearch) {
-      await filterItems();
-    } else {
-      await loadInitialData();
-    }
-
-    // Refresh the statistics
-    await fetchAndDisplayStats();
-  } catch (error) {
-    console.error("Error deleting record:", error);
-    showToast("error");
-  }
 }
 
 // Function to get attendance display

@@ -63,7 +63,12 @@
                 max-h-[300px] sm:max-h-[400px] md:max-h-[500px] 
                 p-3 sm:p-4
                 transform-gpu will-change-scroll
-                scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-transparent">
+                scroll-smooth motion-reduce:scroll-auto
+                scrollbar-thin scrollbar-thumb-gray-400/40 hover:scrollbar-thumb-gray-400/60 active:scrollbar-thumb-gray-400/80
+                scrollbar-track-transparent
+                transition-all duration-200
+                [scrollbar-gutter:stable]
+                [-webkit-overflow-scrolling:touch]">
                 <!-- Cards will be dynamically added here -->
             </div>
         </div>
