@@ -168,12 +168,8 @@ function displayItems(items) {
       const item = items[i];
       const div = document.createElement("div");
       div.className = "result-item";
-
-      // Use template literals only once
-      const itemData = encodeURIComponent(JSON.stringify(item));
-      const itemHTML = getItemHTML(item, itemData);
-
-      div.innerHTML = itemHTML;
+      div.setAttribute("data-id", item.id);
+      div.innerHTML = getItemHTML(item);
       fragment.appendChild(div);
     }
 
@@ -386,41 +382,37 @@ function showToast(type, message) {
 }
 
 // Update the getItemHTML function to make fields directly editable
-function getItemHTML(item, itemData) {
+function getItemHTML(item) {
   return `
-    <div class="result-item" data-id="${item.id}">
-        <h3>
-            <div class="name-text editable-field" onclick="makeFieldEditable(this, ${
-              item.id
-            }, 'full_name')">${escapeHtml(item.full_name)}</div>
-        </h3>
-        <p>
-            <span class="editable-field" onclick="showDropdownEdit(this, 'gender')">
-                <strong>Gender:</strong> ${escapeHtml(item.gender || "N/A")}
-            </span><br>
-            <span class="editable-field" onclick="makeFieldEditable(this, ${
-              item.id
-            }, 'age')">
-                <strong>Age</strong>: ${item.age || "N/A"}
-            </span><br>
-            <span class="editable-field" onclick="makeFieldEditable(this, ${
-              item.id
-            }, 'phone_number')">
-                <strong>Phone Number</strong>: ${escapeHtml(
-                  item.phone_number || "N/A"
-                )}
-            </span><br>
-            <span class="editable-field" onclick="showDropdownEdit(this, 'level')">
-                <strong>Level:</strong> ${escapeHtml(
-                  item.current_level || "N/A"
-                )}
-            </span>
-        </p>
-        <div class="attendance-section">
-            <strong>Attendance:</strong><br>
-            <div class="attendance-grid">
-                ${getAttendanceDisplay(item)}
-            </div>
+    <h3>
+        <div class="name-text editable-field" onclick="makeFieldEditable(this, ${
+          item.id
+        }, 'full_name')">${escapeHtml(item.full_name)}</div>
+    </h3>
+    <p>
+        <span class="editable-field" onclick="showDropdownEdit(this, 'gender')">
+            <strong>Gender:</strong> ${escapeHtml(item.gender || "N/A")}
+        </span><br>
+        <span class="editable-field" onclick="makeFieldEditable(this, ${
+          item.id
+        }, 'age')">
+            <strong>Age</strong>: ${item.age || "N/A"}
+        </span><br>
+        <span class="editable-field" onclick="makeFieldEditable(this, ${
+          item.id
+        }, 'phone_number')">
+            <strong>Phone Number</strong>: ${escapeHtml(
+              item.phone_number || "N/A"
+            )}
+        </span><br>
+        <span class="editable-field" onclick="showDropdownEdit(this, 'level')">
+            <strong>Level:</strong> ${escapeHtml(item.current_level || "N/A")}
+        </span>
+    </p>
+    <div class="attendance-section">
+        <strong>Attendance:</strong><br>
+        <div class="attendance-grid">
+            ${getAttendanceDisplay(item)}
         </div>
     </div>`;
 }
