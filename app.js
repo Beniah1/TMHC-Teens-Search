@@ -219,7 +219,16 @@ async function makeFieldEditable(element, itemId, fieldName) {
       break;
     case "current_level":
       input = createSelect(
-        ["SHS1", "SHS2", "SHS3", "JHS1", "JHS2", "JHS3", "COMP", "UNI"],
+        [
+          "SHS1",
+          "SHS2",
+          "SHS3",
+          "JHS1",
+          "JHS2",
+          "JHS3",
+          "COMPLETED",
+          "UNIVERSITY",
+        ],
         currentValue
       );
       break;
@@ -390,24 +399,82 @@ function getItemHTML(item) {
         }, 'full_name')">${escapeHtml(item.full_name)}</div>
     </h3>
     <p>
-        <span class="editable-field" onclick="showDropdownEdit(this, 'gender')">
-            <strong>Gender:</strong> ${escapeHtml(item.gender || "N/A")}
-        </span><br>
-        <span class="editable-field" onclick="makeFieldEditable(this, ${
-          item.id
-        }, 'age')">
-            <strong>Age</strong>: ${item.age || "N/A"}
-        </span><br>
-        <span class="editable-field" onclick="makeFieldEditable(this, ${
-          item.id
-        }, 'phone_number')">
-            <strong>Phone Number</strong>: ${escapeHtml(
-              item.phone_number || "N/A"
-            )}
-        </span><br>
-        <span class="editable-field" onclick="showDropdownEdit(this, 'level')">
-            <strong>Level:</strong> ${escapeHtml(item.current_level || "N/A")}
-        </span>
+        <div class="info-item">
+            <span>Gender:</span>
+            <select class="info-select ${
+              item.gender?.toLowerCase() === "male"
+                ? "male"
+                : item.gender?.toLowerCase() === "female"
+                ? "female"
+                : ""
+            }" 
+                    onchange="updateField(this, 'gender', this.value, ${
+                      item.id
+                    })">
+                <option value="" disabled ${
+                  !item.gender ? "selected" : ""
+                }>Select Gender</option>
+                <option value="Male" ${
+                  item.gender === "Male" ? "selected" : ""
+                }>Male</option>
+                <option value="Female" ${
+                  item.gender === "Female" ? "selected" : ""
+                }>Female</option>
+            </select>
+        </div>
+        <div class="info-item">
+            <span>Current Level:</span>
+            <select class="info-select ${
+              item.current_level ? "has-value" : ""
+            }" 
+                    onchange="updateField(this, 'current_level', this.value, ${
+                      item.id
+                    })">
+                <option value="" disabled ${
+                  !item.current_level ? "selected" : ""
+                }>Select Current Level</option>
+                <option value="SHS1" ${
+                  item.current_level === "SHS1" ? "selected" : ""
+                }>SHS1</option>
+                <option value="SHS2" ${
+                  item.current_level === "SHS2" ? "selected" : ""
+                }>SHS2</option>
+                <option value="SHS3" ${
+                  item.current_level === "SHS3" ? "selected" : ""
+                }>SHS3</option>
+                <option value="JHS1" ${
+                  item.current_level === "JHS1" ? "selected" : ""
+                }>JHS1</option>
+                <option value="JHS2" ${
+                  item.current_level === "JHS2" ? "selected" : ""
+                }>JHS2</option>
+                <option value="JHS3" ${
+                  item.current_level === "JHS3" ? "selected" : ""
+                }>JHS3</option>
+                <option value="COMPLETED" ${
+                  item.current_level === "COMPLETED" ? "selected" : ""
+                }>COMPLETED</option>
+                <option value="UNIVERSITY" ${
+                  item.current_level === "UNIVERSITY" ? "selected" : ""
+                }>UNIVERSITY</option>
+            </select>
+        </div>
+        <div class="info-item">
+            <span>Age:</span>
+            <span class="editable-field" onclick="makeFieldEditable(this, ${
+              item.id
+            }, 'age')">
+                ${item.age || "N/A"}
+            </span>
+        </div>
+        <div class="info-item">
+            <span>Phone Number:</span>
+            <span class="editable-field" onclick="makeFieldEditable(this, ${
+              item.id
+            }, 'phone_number')">
+                ${escapeHtml(item.phone_number || "N/A")}
+            </span>
+        </div>
     </p>
     <div class="attendance-section">
         <strong>Attendance:</strong><br>
@@ -528,7 +595,7 @@ function escapeHtml(unsafe) {
     .replace(/'/g, "&#039;");
 }
 
-// Update the getAttendanceDisplay function to make attendance fields editable
+// Update the getAttendanceDisplay function to include both Present and Absent options in the dropdown
 function getAttendanceDisplay(item) {
   const attendanceFields = [
     { field: "attendance_2nd", display: "2nd" },
@@ -539,33 +606,35 @@ function getAttendanceDisplay(item) {
   return attendanceFields
     .map((field) => {
       const value = item[field.field];
+      const selectClass =
+        value?.toLowerCase() === "present"
+          ? "present"
+          : value?.toLowerCase() === "absent"
+          ? "absent"
+          : "";
       return `<div class="attendance-item">
             <span>${field.display}:</span>
-            <div class="attendance-buttons">
-                <button class="selection-button present ${
+            <select class="attendance-select ${selectClass}" 
+                    onchange="updateAttendance(this, '${
+                      field.field
+                    }', this.value, ${item.id})">
+                <option value="" disabled ${
+                  !value ? "selected" : ""
+                }>Select</option>
+                <option value="Present" ${
                   value?.toLowerCase() === "present" ? "selected" : ""
-                }" 
-                    onclick="updateAttendance(this, '${
-                      field.field
-                    }', 'Present', ${item.id})">
-                    Present
-                </button>
-                <button class="selection-button absent ${
+                }>Present</option>
+                <option value="Absent" ${
                   value?.toLowerCase() === "absent" ? "selected" : ""
-                }" 
-                    onclick="updateAttendance(this, '${
-                      field.field
-                    }', 'Absent', ${item.id})">
-                    Absent
-                </button>
-            </div>
+                }>Absent</option>
+            </select>
         </div>`;
     })
     .join("");
 }
 
-// Add new function to handle attendance updates
-async function updateAttendance(button, field, value, itemId) {
+// Update the attendance update function
+async function updateAttendance(select, field, value, itemId) {
   try {
     const updateData = { [field]: value };
     const { error } = await supabase
@@ -575,12 +644,14 @@ async function updateAttendance(button, field, value, itemId) {
 
     if (error) throw error;
 
-    // Update buttons state
-    const buttonsContainer = button.parentElement;
-    buttonsContainer.querySelectorAll(".selection-button").forEach((btn) => {
-      btn.classList.remove("selected");
-    });
-    button.classList.add("selected");
+    // Update select element class based on the selected value
+    select.className = `attendance-select ${
+      value?.toLowerCase() === "present"
+        ? "present"
+        : value?.toLowerCase() === "absent"
+        ? "absent"
+        : ""
+    }`;
 
     showToast("success", "Updated successfully");
     searchCache.clear();
@@ -642,8 +713,8 @@ async function fetchAndDisplayStats() {
       "JHS1",
       "JHS2",
       "JHS3",
-      "COMP",
-      "UNI",
+      "COMPLETED",
+      "UNIVERSITY",
     ];
 
     // Initialize counts for all levels
@@ -656,8 +727,8 @@ async function fetchAndDisplayStats() {
     data.forEach((item) => {
       // Convert COMPLETED to COMP and UNIVERSITY to UNI in the data
       let level = item.current_level?.toUpperCase() || "UNKNOWN";
-      if (level === "COMPLETED") level = "COMP";
-      if (level === "UNIVERSITY") level = "UNI";
+      if (level === "COMPLETED") level = "COMPLETED";
+      if (level === "UNIVERSITY") level = "UNIVERSITY";
       if (levelCounts.hasOwnProperty(level)) {
         levelCounts[level]++;
       }
@@ -961,7 +1032,16 @@ function showDropdownEdit(element, field) {
   if (field === "gender") {
     options = ["Male", "Female"];
   } else if (field === "level") {
-    options = ["SHS1", "SHS2", "SHS3", "JHS1", "JHS2", "JHS3", "COMP", "UNI"];
+    options = [
+      "SHS1",
+      "SHS2",
+      "SHS3",
+      "JHS1",
+      "JHS2",
+      "JHS3",
+      "COMPLETED",
+      "UNIVERSITY",
+    ];
   }
 
   // Create buttons for each option
@@ -1044,4 +1124,37 @@ function showDropdownEdit(element, field) {
   // Replace content with selection interface
   element.innerHTML = "";
   element.appendChild(container);
+}
+
+// Add new function to handle field updates
+async function updateField(select, field, value, itemId) {
+  try {
+    const updateData = { [field]: value };
+    const { error } = await supabase
+      .from("TMHCT_Feb")
+      .update(updateData)
+      .eq("id", itemId);
+
+    if (error) throw error;
+
+    // Update select element class based on the field and value
+    if (field === "gender") {
+      select.className = `info-select ${
+        value.toLowerCase() === "male"
+          ? "male"
+          : value.toLowerCase() === "female"
+          ? "female"
+          : ""
+      }`;
+    } else if (field === "current_level") {
+      select.className = `info-select ${value ? "has-value" : ""}`;
+    }
+
+    showToast("success", "Updated successfully");
+    searchCache.clear();
+    await fetchAndDisplayStats();
+  } catch (error) {
+    console.error("Error updating field:", error);
+    showToast("error", "Failed to update");
+  }
 }
