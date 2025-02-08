@@ -709,283 +709,209 @@ select:focus {
 
 /* Attendance section styles */
 .attendance-section {
-  margin-top: 0.5rem;
-  padding: 0.5rem;
-  background: rgba(255, 255, 255, 0.5);
-  border-radius: 6px;
+  margin-top: 0.75rem;
+  padding: 1rem;
+  background: rgba(255, 255, 255, 0.8);
+  border-radius: 12px;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
 }
 
 .attendance-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: 0.5rem;
-  margin-top: 0.25rem;
+  gap: 1rem;
+  margin-top: 0.5rem;
 }
 
 .attendance-item {
   display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  font-size: 0.9rem;
+  flex-direction: column;
+  gap: 0.75rem;
+  font-size: 0.95rem;
+  background: rgba(255, 255, 255, 0.9);
+  padding: 1rem;
+  border-radius: 10px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
 }
 
 .attendance-item span:first-child {
-  min-width: 40px;
-  font-weight: 500;
-}
-
-.attendance-field {
-  padding: 2px 8px;
-  border-radius: 4px;
-  min-width: 70px;
+  font-weight: 600;
   text-align: center;
+  color: #374151;
+  font-size: 1rem;
 }
 
-.attendance-value {
-  padding: 2px 8px;
-  border-radius: 4px;
+.attendance-buttons {
+  display: flex;
+  gap: 0.5rem;
+  padding: 4px;
+  background: rgba(0, 0, 0, 0.03);
+  border-radius: 10px;
+  position: relative;
+  touch-action: manipulation;
+  -webkit-touch-callout: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.attendance-buttons::before {
+  content: "";
+  position: absolute;
+  top: -8px;
+  left: -8px;
+  right: -8px;
+  bottom: -8px;
+  background: transparent;
+  z-index: 0;
+}
+
+.attendance-buttons .selection-button {
+  flex: 1;
+  padding: 10px 16px;
+  font-size: 0.9rem;
   font-weight: 500;
+  border: none;
+  border-radius: 8px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+  background: transparent;
+  color: #374151;
+  z-index: 1;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+  /* Require longer press */
+  user-select: none;
+  -webkit-user-select: none;
 }
 
-.attendance-value.present {
-  background-color: #4ade80;
-  color: #064e3b;
+.attendance-buttons .selection-button::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: currentColor;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  border-radius: 6px;
 }
 
-.attendance-value.absent {
-  background-color: #f87171;
-  color: #7f1d1d;
+.attendance-buttons .selection-button:active::after {
+  opacity: 0.1;
 }
 
-/* Dark mode adjustments */
-.dark-mode .attendance-section {
-  background: rgba(255, 255, 255, 0.1);
+.attendance-buttons .selection-button.present {
+  color: #059669;
 }
 
-.dark-mode .attendance-value.present {
-  background-color: rgba(74, 222, 128, 0.2);
-  color: #4ade80;
+.attendance-buttons .selection-button.absent {
+  color: #dc2626;
 }
 
-.dark-mode .attendance-value.absent {
-  background-color: rgba(248, 113, 113, 0.2);
-  color: #f87171;
+.attendance-buttons .selection-button.selected {
+  color: white;
+  font-weight: 600;
+}
+
+.attendance-buttons .selection-button.selected.present {
+  background: #059669;
+  box-shadow: 0 2px 4px rgba(5, 150, 105, 0.2);
+}
+
+.attendance-buttons .selection-button.selected.absent {
+  background: #dc2626;
+  box-shadow: 0 2px 4px rgba(220, 38, 38, 0.2);
+}
+
+/* Add haptic-like animation */
+@keyframes buttonPress {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(0.95);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+.attendance-buttons .selection-button:active {
+  animation: buttonPress 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 /* Mobile adjustments */
 @media (max-width: 640px) {
   .attendance-grid {
     grid-template-columns: 1fr;
-    gap: 0.25rem;
-  }
-
-  .attendance-item {
-    justify-content: space-between;
-  }
-
-  .attendance-field {
-    min-width: 100px;
-  }
-}
-
-/* Theme-specific attendance colors */
-body.theme-purple .attendance-value.present {
-  background-color: rgba(192, 132, 252, 0.2);
-  color: #c084fc;
-}
-
-body.theme-blue .attendance-value.present {
-  background-color: rgba(96, 165, 250, 0.2);
-  color: #60a5fa;
-}
-
-/* Compact the inline edit container for attendance */
-.attendance-field .inline-edit-container {
-  margin: 0;
-  padding: 0;
-}
-
-.attendance-field .inline-edit-select {
-  min-width: 90px;
-  padding: 4px 24px 4px 8px;
-  font-size: 0.9rem;
-}
-
-/* Update responsive styles */
-@media (max-width: 640px) {
-  .filter-container {
-    flex-direction: column;
     gap: 0.75rem;
   }
 
-  .download-button {
-    width: 100%;
+  .attendance-item {
+    padding: 1rem;
+  }
+
+  .attendance-buttons {
+    padding: 6px;
+    min-height: 48px; /* Larger touch target */
+  }
+
+  .attendance-buttons .selection-button {
+    padding: 12px 20px;
+    font-size: 1rem;
+    min-height: 48px; /* Ensure minimum touch target size */
+  }
+
+  /* Add extra padding to prevent accidental touches */
+  .attendance-buttons::before {
+    top: -12px;
+    left: -12px;
+    right: -12px;
+    bottom: -12px;
   }
 }
 
-.stat-download-button {
-  background: rgba(255, 255, 255, 0.2);
+/* Dark mode adjustments */
+.dark-mode .attendance-section {
+  background: rgba(30, 30, 30, 0.8);
+}
+
+.dark-mode .attendance-item {
+  background: rgba(40, 40, 40, 0.9);
+}
+
+.dark-mode .attendance-item span:first-child {
+  color: #e5e7eb;
+}
+
+.dark-mode .attendance-buttons {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.dark-mode .attendance-buttons .selection-button {
+  color: #e5e7eb;
+}
+
+.dark-mode .attendance-buttons .selection-button.present {
+  color: #34d399;
+}
+
+.dark-mode .attendance-buttons .selection-button.absent {
+  color: #f87171;
+}
+
+.dark-mode .attendance-buttons .selection-button.selected.present {
+  background: #059669;
   color: white;
-  border: 1px solid rgba(255, 255, 255, 0.3);
-  padding: 0.5rem 1rem;
-  border-radius: 6px;
-  cursor: pointer;
-  font-size: 0.9rem;
-  transition: all 0.3s ease;
-  margin-left: 1rem;
-  white-space: nowrap;
 }
 
-.stat-download-button:hover {
-  background: rgba(255, 255, 255, 0.3);
-  transform: translateY(-1px);
-}
-
-/* Add a fallback for browsers that don't support backdrop-filter */
-@supports not (backdrop-filter: blur(8px)) {
-  #cardsContainer {
-    background: rgba(255, 255, 255, 0.95);
-  }
-
-  .result-item {
-    background: rgba(255, 255, 255, 0.9);
-  }
-
-  .result-item p {
-    background: rgba(255, 255, 255, 0.95);
-  }
-}
-
-/* Optimize performance by using hardware acceleration */
-#cardsContainer,
-.result-item {
-  transform: translateZ(0);
-  will-change: transform;
-}
-
-/* Update Theme Switcher position and style */
-.theme-switcher {
-  position: fixed;
-  bottom: 6rem;
-  left: 50%;
-  transform: translateX(-50%);
-  display: flex;
-  gap: 0.5rem;
-  background: rgba(255, 255, 255, 0.15);
-  padding: 0.4rem;
-  border-radius: 50px;
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  z-index: 98;
-  width: 200px; /* Increased width to accommodate dark mode */
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-}
-
-.theme-button {
-  flex: 1;
-  height: 28px; /* Slightly smaller height */
-  border-radius: 50px;
-  border: 2px solid rgba(255, 255, 255, 0.3);
-  cursor: pointer;
-  background: rgba(255, 255, 255, 0.2);
-  transition: all 0.3s ease;
-  position: relative;
-  overflow: hidden;
-}
-
-/* Theme button backgrounds */
-.green-theme {
-  background: linear-gradient(135deg, #45a049, #245326);
-}
-
-.purple-theme {
-  background: linear-gradient(135deg, #800080, #4a0080);
-}
-
-.blue-theme {
-  background: linear-gradient(135deg, #1e3a8a, #1e40af);
-}
-
-.theme-button:hover {
-  transform: scale(1.05);
-  border-color: rgba(255, 255, 255, 0.8);
-}
-
-.theme-button.active {
-  border-color: white;
-  box-shadow: 0 0 15px rgba(255, 255, 255, 0.3);
-  transform: scale(1.1);
-}
-
-/* Glass effect container */
-.theme-switcher::before {
-  content: "";
-  position: absolute;
-  top: -0.5rem;
-  left: -0.5rem;
-  right: -0.5rem;
-  bottom: -0.5rem;
-  background: rgba(255, 255, 255, 0.1);
-  border-radius: 60px;
-  z-index: -1;
-  backdrop-filter: blur(4px);
-  -webkit-backdrop-filter: blur(4px);
-  opacity: 0.5;
-}
-
-/* Responsive adjustments */
-@media (max-width: 768px) {
-  .theme-switcher {
-    width: 180px;
-    padding: 0.35rem;
-    gap: 0.4rem;
-    bottom: 5.5rem;
-  }
-
-  .theme-button {
-    height: 24px;
-  }
-
-  /* Adjust other elements for better mobile layout */
-  .search-section input[type="text"] {
-    font-size: 0.95rem;
-    padding: 0.75rem 1rem;
-  }
-
-  .stat-card {
-    padding: 0.75rem;
-  }
-}
-
-@media (max-width: 480px) {
-  .theme-switcher {
-    width: 120px; /* Even smaller on phones */
-    bottom: 5rem;
-    padding: 0.3rem;
-    gap: 0.3rem;
-  }
-
-  .theme-button {
-    height: 22px;
-  }
-
-  /* Adjust buttons container for mobile */
-  .fixed-buttons {
-    bottom: 1rem;
-  }
-
-  .add-button {
-    width: 50px;
-    height: 50px;
-    font-size: 1.5rem;
-  }
-
-  /* Adjust admin logout button for mobile */
-  .admin-logout-button {
-    padding: 0.5rem 1rem;
-    font-size: 0.9rem;
-  }
+.dark-mode .attendance-buttons .selection-button.selected.absent {
+  background: #dc2626;
+  color: white;
 }
 
 /* Purple Theme Preview */
@@ -1134,7 +1060,7 @@ body.theme-blue .level-count {
 
 /* Theme-specific colors for text and toasts */
 /* Green Theme (Default) */
-body.theme-green .text-[#357d39],
+body.theme-green .text-primary,
 body.theme-green input::placeholder,
 body.theme-green .search-section input[type="text"] {
   color: #357d39;
@@ -1149,7 +1075,7 @@ body.theme-green .toast.error {
 }
 
 /* Purple Theme */
-body.theme-purple .text-[#357d39],
+body.theme-purple .text-primary,
 body.theme-purple input::placeholder,
 body.theme-purple .search-section input[type="text"] {
   color: #800080;
@@ -1164,7 +1090,7 @@ body.theme-purple .toast.error {
 }
 
 /* Blue Theme */
-body.theme-blue .text-[#357d39],
+body.theme-blue .text-primary,
 body.theme-blue input::placeholder,
 body.theme-blue .search-section input[type="text"] {
   color: #1e3a8a;
@@ -1189,16 +1115,6 @@ body.theme-purple .search-section input[type="text"]:focus {
 
 body.theme-blue .search-section input[type="text"]:focus {
   border-color: #1e3a8a;
-}
-
-/* Update toast animations for each theme */
-.toast {
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-}
-
-.toast.show {
-  transform: translate(-50%, -20px) scale(1);
 }
 
 /* Update instruction text colors */
@@ -1227,353 +1143,152 @@ body.theme-blue input::placeholder {
   color: rgba(30, 58, 138, 0.8);
 }
 
-/* Admin Theme Preview */
-.admin-theme .theme-preview {
-  background: linear-gradient(135deg, #dc2626, #991b1b);
-}
-
-.theme-switcher {
-  width: 160px; /* Increased to accommodate 4 buttons */
-}
-
-/* Admin button specific styles */
-.admin-theme {
-  position: relative;
-}
-
-.admin-theme::after {
-  content: "🔒";
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  font-size: 10px;
-  opacity: 0.7;
-}
-
-.admin-theme.active::after {
-  content: "🔓";
-}
-
-/* Animation for admin sections */
-.admin-sections {
-  transition: all 0.3s ease;
-  opacity: 0;
-  transform: translateY(-10px);
-}
-
-.admin-sections.visible {
-  opacity: 1;
-  transform: translateY(0);
-}
-
-/* Default (Green theme) input text color */
-.search-section input[type="text"] {
-  width: 100%;
-  padding: 1rem;
-  border: 2px solid rgba(255, 255, 255, 0.3);
-  border-radius: 12px;
-  font-size: 1rem;
-  background: rgba(255, 255, 255, 0.95);
-  color: #357d39; /* Default green color */
-  font-weight: 500;
-  transition: all 0.2s ease;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-}
-
-/* Purple theme input text color */
-body.theme-purple .search-section input[type="text"] {
-  color: #800080;
-}
-
-/* Blue theme input text color */
-body.theme-blue .search-section input[type="text"] {
-  color: #1e3a8a;
-}
-
-/* Admin theme input text color */
+/* Admin theme colors */
 body.theme-admin .search-section input[type="text"] {
   color: #dc2626;
-}
-
-/* Update placeholder colors for each theme */
-body.theme-green .search-section input[type="text"]::placeholder {
-  color: rgba(53, 125, 57, 0.7);
-}
-
-body.theme-purple input::placeholder {
-  color: rgba(128, 0, 128, 0.7);
-}
-
-body.theme-blue input::placeholder {
-  color: rgba(30, 58, 138, 0.7);
 }
 
 body.theme-admin .search-section input[type="text"]::placeholder {
   color: rgba(220, 38, 38, 0.7);
 }
 
-/* Update container width and padding for mobile */
+/* Compact the inline edit container for attendance */
+.attendance-field .inline-edit-container {
+  margin: 0;
+  padding: 0;
+}
+
+.attendance-field .inline-edit-select {
+  min-width: 90px;
+  padding: 4px 24px 4px 8px;
+  font-size: 0.9rem;
+}
+
+/* Update responsive styles */
 @media (max-width: 640px) {
-  .container {
-    padding: 1rem 0.5rem;
-    width: 100%;
-  }
-
-  #cardsContainer {
-    padding: 0 0.75rem;
-  }
-
-  /* Add space at the top */
-  .search-section {
-    padding: 1rem;
-    margin: 0.5rem 0.75rem 1rem;
-    border-radius: 8px;
-  }
-
-  .search-section h1 {
-    font-size: 1.5rem;
-    margin-bottom: 1rem;
-  }
-
-  .result-item {
-    width: 100%;
-    padding: 0.75rem;
-    margin: 0 0 1rem 0;
-    border-radius: 8px;
-  }
-
-  /* Stats container spacing */
-  .stats-container {
-    margin: 1rem 0.75rem;
-    padding: 0.75rem;
-  }
-}
-
-/* Adjust search section for mobile */
-@media (max-width: 640px) {
-  .search-section {
-    padding: 0.75rem;
-    margin: 0.75rem 0.75rem 1rem 0.75rem;
-  }
-}
-
-/* Larger phones and small tablets */
-@media (min-width: 400px) and (max-width: 640px) {
-  .result-item {
-    width: calc(100% + 1rem);
-    margin-left: -0.5rem;
-    margin-right: -0.5rem;
-    padding: 1.25rem;
-  }
-}
-
-/* Adjust container max-width */
-@media (min-width: 640px) {
-  .container {
-    max-width: 90%;
-    margin: 0 auto;
-  }
-}
-
-/* Mobile-first base styles */
-@media (max-width: 640px) {
-  /* Container and layout */
-  .container {
-    padding: 1rem 0.5rem;
-    width: 100%;
-  }
-
-  /* Title and search area */
-  .search-section {
-    padding: 1rem;
-    margin: 0.5rem 0.75rem 1rem;
-    border-radius: 8px;
-  }
-
-  .search-section h1 {
-    font-size: 1.5rem;
-    margin-bottom: 1rem;
-  }
-
-  /* Search input */
-  .search-section input[type="text"] {
-    padding: 0.875rem;
-    font-size: 0.95rem;
-  }
-
-  /* Stats container */
-  .stats-container {
-    margin: 1rem 0.75rem;
-    padding: 0.75rem;
-  }
-
-  .stats-grid {
+  .filter-container {
+    flex-direction: column;
     gap: 0.75rem;
   }
 
-  .stat-card {
-    margin-bottom: 0.5rem;
-  }
-
-  /* Category filter */
-  .category-filter {
-    margin: 0.75rem;
-    padding: 0.75rem;
-  }
-
-  .filter-container {
-    flex-direction: column;
-    gap: 0.5rem;
-  }
-
-  .filter-container select,
   .download-button {
     width: 100%;
-    padding: 0.75rem;
   }
+}
 
-  /* Cards container */
+.stat-download-button {
+  background: rgba(255, 255, 255, 0.2);
+  color: white;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: all 0.3s ease;
+  margin-left: 1rem;
+  white-space: nowrap;
+}
+
+.stat-download-button:hover {
+  background: rgba(255, 255, 255, 0.3);
+  transform: translateY(-1px);
+}
+
+/* Add a fallback for browsers that don't support backdrop-filter */
+@supports not (backdrop-filter: blur(8px)) {
   #cardsContainer {
-    padding: 0 0.75rem;
+    background: rgba(255, 255, 255, 0.95);
   }
 
-  /* Result items */
   .result-item {
-    padding: 0.75rem;
-    margin-bottom: 1rem;
+    background: rgba(255, 255, 255, 0.9);
   }
-
-  .result-item h3 {
-    padding: 0.75rem;
-    margin-bottom: 0.75rem;
-  }
-
-  /* Info sections */
 
   .result-item p {
-    padding: 0.75rem;
-    font-size: 0.9rem;
-    line-height: 1.5;
-  }
-
-  /* Attendance section */
-  .attendance-section {
-    padding: 0.75rem;
-  }
-
-  .attendance-item {
-    padding: 0.5rem 0;
-    font-size: 0.9rem;
-  }
-
-  /* Theme switcher */
-  .theme-switcher {
-    bottom: 5rem;
-    transform: scale(0.9);
-  }
-
-  /* Fixed buttons */
-  .fixed-buttons {
-    bottom: 1rem;
-    right: 1rem;
-  }
-
-  .add-button {
-    width: 45px;
-    height: 45px;
-    font-size: 1.25rem;
-  }
-
-  /* Modal adjustments */
-  .modal-content {
-    width: 95%;
-    padding: 1rem;
-    margin: 1rem auto;
-  }
-
-  .form-group {
-    margin-bottom: 0.75rem;
-  }
-
-  .form-group label {
-    font-size: 0.9rem;
-    margin-bottom: 0.25rem;
-  }
-
-  .form-group input,
-  .form-group select {
-    padding: 0.625rem;
-    font-size: 0.9rem;
+    background: rgba(255, 255, 255, 0.95);
   }
 }
 
-/* Larger phones and small tablets */
-@media (min-width: 400px) and (max-width: 640px) {
-  .container {
-    padding: 1rem;
-  }
-
-  .search-section,
-  .stats-container,
-  .category-filter {
-    margin: 1rem;
-  }
-
-  .result-item {
-    padding: 1rem;
-  }
+/* Optimize performance by using hardware acceleration */
+#cardsContainer,
+.result-item {
+  transform: translateZ(0);
+  will-change: transform;
 }
 
-/* Ensure smooth transitions between screen sizes */
-@media (min-width: 641px) {
-  .container {
-    max-width: 90%;
-    margin: 0 auto;
-    padding: 2rem;
-  }
-
-  .filter-container {
-    flex-direction: row;
-    align-items: center;
-  }
-
-  .filter-container select {
-    max-width: 200px;
-  }
+/* Update Theme Switcher position and style */
+.theme-switcher {
+  position: fixed;
+  bottom: 6rem;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 0.5rem;
+  background: rgba(255, 255, 255, 0.15);
+  padding: 0.4rem;
+  border-radius: 50px;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  z-index: 98;
+  width: 200px; /* Increased width to accommodate dark mode */
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
-/* Update dark mode toggle button to pill shape */
-.dark-mode-toggle {
-  position: static; /* Remove fixed positioning */
+.theme-button {
   flex: 1;
-  height: 28px;
+  height: 28px; /* Slightly smaller height */
   border-radius: 50px;
   border: 2px solid rgba(255, 255, 255, 0.3);
   cursor: pointer;
   background: rgba(255, 255, 255, 0.2);
   transition: all 0.3s ease;
-  min-width: 0;
-  padding: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 4px;
+  position: relative;
+  overflow: hidden;
 }
 
-.dark-mode-toggle:hover {
+/* Theme button backgrounds */
+.green-theme {
+  background: linear-gradient(135deg, #45a049, #245326);
+}
+
+.purple-theme {
+  background: linear-gradient(135deg, #800080, #4a0080);
+}
+
+.blue-theme {
+  background: linear-gradient(135deg, #1e3a8a, #1e40af);
+}
+
+.theme-button:hover {
   transform: scale(1.05);
   border-color: rgba(255, 255, 255, 0.8);
 }
 
-.dark-mode-toggle.active {
+.theme-button.active {
   border-color: white;
   box-shadow: 0 0 15px rgba(255, 255, 255, 0.3);
   transform: scale(1.1);
 }
 
-/* Responsive adjustments */
-@media (max-width: 640px) {
+/* Glass effect container */
+.theme-switcher::before {
+  content: "";
+  position: absolute;
+  top: -0.5rem;
+  left: -0.5rem;
+  right: -0.5rem;
+  bottom: -0.5rem;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 60px;
+  z-index: -1;
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  opacity: 0.5;
+}
+
+/* Responsive adjustments for theme switcher */
+@media (max-width: 768px) {
   .theme-switcher {
     width: 180px;
     padding: 0.35rem;
@@ -1581,117 +1296,155 @@ body.theme-admin .search-section input[type="text"]::placeholder {
     bottom: 5.5rem;
   }
 
-  .dark-mode-toggle {
+  .theme-button {
     height: 24px;
-    font-size: 0.8rem;
+  }
+
+  /* Adjust other elements for better mobile layout */
+  .search-section input[type="text"] {
+    font-size: 0.95rem;
+    padding: 0.75rem 1rem;
+  }
+
+  .stat-card {
+    padding: 0.75rem;
   }
 }
 
-/* Dark mode styles */
-body.dark-mode {
-  background: linear-gradient(-45deg, #1a1a1a, #2d2d2d, #1f1f1f);
+@media (max-width: 480px) {
+  .theme-switcher {
+    width: 120px; /* Even smaller on phones */
+    bottom: 5rem;
+    padding: 0.3rem;
+    gap: 0.3rem;
+  }
+
+  .theme-button {
+    height: 22px;
+  }
+
+  /* Adjust buttons container for mobile */
+  .fixed-buttons {
+    bottom: 1rem;
+  }
+
+  .add-button {
+    width: 50px;
+    height: 50px;
+    font-size: 1.5rem;
+  }
+
+  /* Adjust admin logout button for mobile */
+  .admin-logout-button {
+    padding: 0.5rem 1rem;
+    font-size: 0.9rem;
+  }
 }
 
-body.dark-mode .result-item {
-  background: rgba(40, 40, 40, 0.8);
-  border-color: rgba(255, 255, 255, 0.1);
+/* Selection container styles */
+.selection-container {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: 0.5rem;
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  animation: scaleIn 0.2s ease-out;
 }
 
-body.dark-mode .result-item p {
-  background: rgba(30, 30, 30, 0.9);
-  color: #e0e0e0;
-  border-color: rgba(255, 255, 255, 0.05);
+.selection-container .selection-button {
+  padding: 0.75rem 1rem;
+  border: none;
+  border-radius: 6px;
+  background: white;
+  color: #374151;
+  font-size: 0.95rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  position: relative;
+  overflow: hidden;
 }
 
-body.dark-mode .search-section input[type="text"] {
+.selection-container .selection-button:hover {
+  background: #f3f4f6;
+  transform: translateY(-1px);
+}
+
+.selection-container .selection-button.selected {
+  background: #45a049;
+  color: white;
+}
+
+.selection-container .selection-button.cancel {
+  background: #ef4444;
+  color: white;
+}
+
+.selection-container .selection-button.cancel:hover {
+  background: #dc2626;
+}
+
+/* Theme-specific selection button colors */
+body.theme-purple .selection-container .selection-button.selected {
+  background: #800080;
+}
+
+body.theme-blue .selection-container .selection-button.selected {
+  background: #1e3a8a;
+}
+
+/* Dark mode adjustments for selection */
+.dark-mode .selection-container {
   background: rgba(30, 30, 30, 0.95);
-  color: #e0e0e0;
-  border-color: rgba(255, 255, 255, 0.1);
 }
 
-body.dark-mode .stats-container,
-body.dark-mode .category-filter {
-  background: rgba(40, 40, 40, 0.8);
-  border-color: rgba(255, 255, 255, 0.1);
+.dark-mode .selection-container .selection-button {
+  background: #374151;
+  color: #e5e7eb;
 }
 
-body.dark-mode .attendance-section {
-  background: rgba(30, 30, 30, 0.9);
-  color: #e0e0e0;
+.dark-mode .selection-container .selection-button:hover {
+  background: #4b5563;
 }
 
-body.dark-mode .modal-content {
-  background: #2d2d2d;
-  color: #e0e0e0;
+.dark-mode .selection-container .selection-button.selected {
+  background: #45a049;
+  color: white;
 }
 
-body.dark-mode .form-group input,
-body.dark-mode .form-group select {
-  background: #1a1a1a;
-  color: #e0e0e0;
-  border-color: rgba(255, 255, 255, 0.1);
+.dark-mode .selection-container .selection-button.cancel {
+  background: #dc2626;
 }
 
-body.dark-mode .attendance-value.present {
-  background: rgba(16, 185, 129, 0.2);
-  color: #34d399;
+.dark-mode .selection-container .selection-button.cancel:hover {
+  background: #b91c1c;
 }
 
-body.dark-mode .attendance-value.absent {
-  background: rgba(239, 68, 68, 0.2);
-  color: #f87171;
+/* Animation for selection container */
+@keyframes scaleIn {
+  from {
+    transform: scale(0.95);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
 }
 
-/* Dark mode overrides for different themes */
-body.dark-mode.theme-green,
-body.dark-mode.theme-purple,
-body.dark-mode.theme-blue,
-body.dark-mode.theme-admin {
-  background: linear-gradient(-45deg, #1a1a1a, #2d2d2d, #1f1f1f);
+.selection-container.closing {
+  animation: scaleOut 0.2s ease-out forwards;
 }
 
-/* Ensure dark mode text colors work with all themes */
-body.dark-mode.theme-green .search-section input[type="text"],
-body.dark-mode.theme-purple .search-section input[type="text"],
-body.dark-mode.theme-blue .search-section input[type="text"],
-body.dark-mode.theme-admin .search-section input[type="text"] {
-  color: #e0e0e0;
-}
-
-/* Preserve dark mode styles for all themes */
-body.dark-mode .result-item,
-body.dark-mode.theme-green .result-item,
-body.dark-mode.theme-purple .result-item,
-body.dark-mode.theme-blue .result-item,
-body.dark-mode.theme-admin .result-item {
-  background: rgba(40, 40, 40, 0.8);
-  border-color: rgba(255, 255, 255, 0.1);
-}
-
-/* Update/add these styles for the blur effect */
-.status-indicator {
-  /* Maintain shape and blur across devices */
-  -webkit-backdrop-filter: blur(8px);
-  backdrop-filter: blur(8px);
-  background: rgba(255, 255, 255, 0.1);
-
-  /* Ensure consistent rendering on mobile */
-  transform: translateZ(0);
-  -webkit-transform: translateZ(0);
-
-  /* Add vendor prefixes for broader support */
-  -webkit-backface-visibility: hidden;
-  backface-visibility: hidden;
-}
-
-/* Add specific mobile adjustments */
-@media screen and (max-width: 768px) {
-  .status-indicator {
-    /* Adjust blur intensity for mobile if needed */
-    -webkit-backdrop-filter: blur(6px);
-    backdrop-filter: blur(6px);
-
-    /* Ensure GPU acceleration on mobile */
-    will-change: transform;
+@keyframes scaleOut {
+  from {
+    transform: scale(1);
+    opacity: 1;
+  }
+  to {
+    transform: scale(0.95);
+    opacity: 0;
   }
 }

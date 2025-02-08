@@ -216,23 +216,16 @@ async function makeFieldEditable(element, itemId, fieldName) {
       input = createSelect(["Male", "Female"], currentValue);
       break;
     case "age":
-      input = createInput("number", currentValue, { min: "0" });
+      input = createInput("number", currentValue, { min: "0", max: "100" });
+      break;
+    case "phone_number":
+      input = createInput("tel", currentValue);
       break;
     case "current_level":
       input = createSelect(
-        [
-          "NON",
-          "SHS1",
-          "SHS2",
-          "SHS3",
-          "JHS1",
-          "JHS2",
-          "COMPLETED",
-          "UNIVERSITY",
-        ],
+        ["SHS1", "SHS2", "SHS3", "JHS1", "JHS2", "JHS3", "COMP", "UNI"],
         currentValue
       );
-
       break;
     case fieldName.match(/^attendance_/)?.input:
       input = createSelect(["Present", "Absent"], currentValue);
@@ -248,8 +241,9 @@ async function makeFieldEditable(element, itemId, fieldName) {
   // Clear and populate with input
   element.innerHTML = "";
   if (label) {
+    const labelText = label.endsWith(":") ? label : label + ":";
     element.appendChild(document.createElement("strong")).textContent =
-      label + ": ";
+      labelText + " ";
   }
   element.appendChild(input);
 
@@ -270,6 +264,10 @@ async function makeFieldEditable(element, itemId, fieldName) {
 
     try {
       const updateData = { [fieldName]: newValue || null };
+      if (fieldName === "age") {
+        updateData[fieldName] = newValue ? parseInt(newValue) : null;
+      }
+
       const { error } = await supabase
         .from("TMHCT_Feb")
         .update(updateData)
@@ -294,7 +292,10 @@ async function makeFieldEditable(element, itemId, fieldName) {
       } else {
         // Regular fields
         if (label) {
-          element.innerHTML = `<strong>${label}:</strong> ${newValue || "N/A"}`;
+          const labelText = label.endsWith(":") ? label : label + ":";
+          element.innerHTML = `<strong>${labelText}</strong> ${
+            newValue || "N/A"
+          }`;
         } else {
           element.textContent = newValue || "N/A";
         }
@@ -384,38 +385,44 @@ function showToast(type, message) {
   });
 }
 
-// Update the getItemHTML function to correctly pass the item ID
+// Update the getItemHTML function to make fields directly editable
 function getItemHTML(item, itemData) {
   return `
-        <div class="result-item">
-            <h3>
-                <div class="button-container">
-                    <button onclick="editItem('${itemData}')" class="search-button">
-                        Edit
-                    </button>
-                    <button onclick="deleteItem(${
-                      item.id
-                    })" class="bg-red-500 hover:bg-red-600 text-white font-medium px-4 py-2 rounded-lg">
-                        Delete
-                    </button>
-                </div>
-                <div class="name-text">${escapeHtml(item.full_name)}</div>
-            </h3>
-            <p>
-                <strong>Gender:</strong> ${escapeHtml(item.gender || "N/A")}<br>
-                <strong>Age:</strong> ${item.age || "N/A"}<br>
-                <strong>Phone:</strong> ${escapeHtml(
+    <div class="result-item" data-id="${item.id}">
+        <h3>
+            <div class="name-text editable-field" onclick="makeFieldEditable(this, ${
+              item.id
+            }, 'full_name')">${escapeHtml(item.full_name)}</div>
+        </h3>
+        <p>
+            <span class="editable-field" onclick="showDropdownEdit(this, 'gender')">
+                <strong>Gender:</strong> ${escapeHtml(item.gender || "N/A")}
+            </span><br>
+            <span class="editable-field" onclick="makeFieldEditable(this, ${
+              item.id
+            }, 'age')">
+                <strong>Age</strong>: ${item.age || "N/A"}
+            </span><br>
+            <span class="editable-field" onclick="makeFieldEditable(this, ${
+              item.id
+            }, 'phone_number')">
+                <strong>Phone Number</strong>: ${escapeHtml(
                   item.phone_number || "N/A"
-                )}<br>
+                )}
+            </span><br>
+            <span class="editable-field" onclick="showDropdownEdit(this, 'level')">
                 <strong>Level:</strong> ${escapeHtml(
                   item.current_level || "N/A"
                 )}
-            </p>
-            <div class="attendance-section">
-                <strong>Attendance:</strong><br>
+            </span>
+        </p>
+        <div class="attendance-section">
+            <strong>Attendance:</strong><br>
+            <div class="attendance-grid">
                 ${getAttendanceDisplay(item)}
             </div>
-        </div>`;
+        </div>
+    </div>`;
 }
 
 // Function to show modal for adding/editing
@@ -529,7 +536,7 @@ function escapeHtml(unsafe) {
     .replace(/'/g, "&#039;");
 }
 
-// Function to get attendance display
+// Update the getAttendanceDisplay function to make attendance fields editable
 function getAttendanceDisplay(item) {
   const attendanceFields = [
     { field: "attendance_2nd", display: "2nd" },
@@ -542,14 +549,54 @@ function getAttendanceDisplay(item) {
       const value = item[field.field];
       return `<div class="attendance-item">
             <span>${field.display}:</span>
-            <span class="attendance-value ${
-              value?.toLowerCase() === "present" ? "present" : "absent"
-            }">
-                ${escapeHtml(value || "N/A")}
-            </span>
+            <div class="attendance-buttons">
+                <button class="selection-button present ${
+                  value?.toLowerCase() === "present" ? "selected" : ""
+                }" 
+                    onclick="updateAttendance(this, '${
+                      field.field
+                    }', 'Present', ${item.id})">
+                    Present
+                </button>
+                <button class="selection-button absent ${
+                  value?.toLowerCase() === "absent" ? "selected" : ""
+                }" 
+                    onclick="updateAttendance(this, '${
+                      field.field
+                    }', 'Absent', ${item.id})">
+                    Absent
+                </button>
+            </div>
         </div>`;
     })
     .join("");
+}
+
+// Add new function to handle attendance updates
+async function updateAttendance(button, field, value, itemId) {
+  try {
+    const updateData = { [field]: value };
+    const { error } = await supabase
+      .from("TMHCT_Feb")
+      .update(updateData)
+      .eq("id", itemId);
+
+    if (error) throw error;
+
+    // Update buttons state
+    const buttonsContainer = button.parentElement;
+    buttonsContainer.querySelectorAll(".selection-button").forEach((btn) => {
+      btn.classList.remove("selected");
+    });
+    button.classList.add("selected");
+
+    showToast("success", "Updated successfully");
+    searchCache.clear();
+    await fetchAndDisplayStats();
+  } catch (error) {
+    console.error("Error updating attendance:", error);
+    showToast("error", "Failed to update");
+  }
 }
 
 // Function to load initial data
@@ -615,7 +662,10 @@ async function fetchAndDisplayStats() {
 
     // Count students in each level
     data.forEach((item) => {
-      const level = item.current_level?.toUpperCase() || "UNKNOWN";
+      // Convert COMPLETED to COMP and UNIVERSITY to UNI in the data
+      let level = item.current_level?.toUpperCase() || "UNKNOWN";
+      if (level === "COMPLETED") level = "COMP";
+      if (level === "UNIVERSITY") level = "UNI";
       if (levelCounts.hasOwnProperty(level)) {
         levelCounts[level]++;
       }
@@ -895,79 +945,7 @@ darkModeToggle.addEventListener("click", () => {
   }
 });
 
-// Add these new functions for inline editing
-function showInlineEdit(element, field) {
-  const currentValue = element.textContent.trim();
-  const input = document.createElement("input");
-  input.type = field === "age" ? "number" : "text";
-  input.value = currentValue === "N/A" ? "" : currentValue;
-  input.className = "inline-edit-input";
-
-  // Save the original content
-  const originalContent = element.innerHTML;
-
-  // Create a container for the input
-  const container = document.createElement("div");
-  container.className = "inline-edit-container";
-
-  // Replace the content with the input
-  element.innerHTML = "";
-  container.appendChild(input);
-  element.appendChild(container);
-  input.focus();
-
-  let updateTimeout;
-
-  // Handle input changes with debounce
-  input.addEventListener("input", () => {
-    clearTimeout(updateTimeout);
-    updateTimeout = setTimeout(async () => {
-      const newValue = input.value.trim();
-      if (newValue === currentValue) return;
-
-      try {
-        const updateData = {};
-        if (field === "age") {
-          updateData.age = newValue ? parseInt(newValue) : null;
-        } else if (field === "phone") {
-          updateData.phone_number = newValue || null;
-        }
-
-        const { error } = await supabase
-          .from("TMHCT_Feb")
-          .update(updateData)
-          .eq("id", element.closest(".result-item").dataset.id);
-
-        if (error) throw error;
-
-        element.innerHTML = newValue || "N/A";
-        showToast("success");
-        searchCache.clear();
-        await fetchAndDisplayStats();
-      } catch (error) {
-        console.error("Error updating:", error);
-        element.innerHTML = originalContent;
-        showToast("error");
-      }
-    }, 1000); // Wait for 1 second after user stops typing
-  });
-
-  // Handle blur and escape
-  input.addEventListener("blur", () => {
-    clearTimeout(updateTimeout);
-    if (input.value.trim() === currentValue) {
-      element.innerHTML = originalContent;
-    }
-  });
-
-  input.addEventListener("keydown", (e) => {
-    if (e.key === "Escape") {
-      clearTimeout(updateTimeout);
-      element.innerHTML = originalContent;
-    }
-  });
-}
-
+// Update the showDropdownEdit function with the new button-based design
 function showDropdownEdit(element, field) {
   const currentValue = element.textContent.trim();
   const container = document.createElement("div");
@@ -1019,15 +997,17 @@ function showDropdownEdit(element, field) {
           element.innerHTML = opt;
           element.className = `editable-field attendance-field attendance-value ${opt.toLowerCase()}`;
         } else {
-          element.innerHTML = opt;
+          // For gender and level, preserve the label
+          const label = field.charAt(0).toUpperCase() + field.slice(1);
+          element.innerHTML = `<strong>${label}:</strong> ${opt}`;
         }
 
-        showToast("success");
+        showToast("success", "Updated successfully");
         searchCache.clear();
         await fetchAndDisplayStats();
       } catch (error) {
         console.error("Error updating:", error);
-        showToast("error");
+        showToast("error", "Failed to update");
       }
     });
 
@@ -1039,7 +1019,22 @@ function showDropdownEdit(element, field) {
   cancelButton.className = "selection-button cancel";
   cancelButton.textContent = "Cancel";
   cancelButton.addEventListener("click", () => {
-    element.innerHTML = currentValue;
+    // Add closing animation class
+    container.classList.add("closing");
+
+    // After animation completes, restore original content
+    setTimeout(() => {
+      if (field.startsWith("attendance_")) {
+        element.innerHTML = currentValue;
+        element.className = `editable-field attendance-field attendance-value ${
+          currentValue.toLowerCase() === "present" ? "present" : "absent"
+        }`;
+      } else {
+        // For gender and level, preserve the label
+        const label = field.charAt(0).toUpperCase() + field.slice(1);
+        element.innerHTML = `<strong>${label}:</strong> ${currentValue}`;
+      }
+    }, 200); // Match this with the CSS animation duration
   });
   container.appendChild(cancelButton);
 
