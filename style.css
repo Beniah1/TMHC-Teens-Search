@@ -106,6 +106,14 @@ body {
   }
 }
 
+.search-and-theme-container {
+  max-width: 42rem;
+  margin: 0 auto 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
 .search-section {
   background: linear-gradient(
     135deg,
@@ -114,10 +122,8 @@ body {
   );
   padding: 1rem;
   border-radius: 12px;
-  margin-bottom: 1.5rem;
-  max-width: 42rem;
-  margin-left: auto;
-  margin-right: auto;
+  width: 100%;
+  margin: 0;
 }
 
 @media (min-width: 640px) {
@@ -1045,299 +1051,272 @@ body.theme-blue .level-count {
 
 /* Responsive adjustments */
 @media (max-width: 768px) {
+  body {
+    padding: 1rem;
+  }
+
+  .search-and-theme-container {
+    padding: 0 1rem;
+  }
+
+  .search-section {
+    padding: 0.75rem;
+  }
+
   .theme-switcher {
-    top: auto;
-    bottom: 6rem;
+    padding: 0.5rem;
+  }
+
+  .result-item {
+    padding: 1rem;
+  }
+
+  .attendance-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .attendance-buttons {
+    flex-direction: row;
+    gap: 0.5rem;
+  }
+
+  .attendance-buttons .selection-button {
+    padding: 0.75rem;
+    font-size: 0.9rem;
+  }
+
+  .fixed-buttons {
+    bottom: 1rem;
+    right: 1rem;
+  }
+
+  .buttons-glass-container {
+    padding: 0.5rem;
+  }
+
+  .stat-card {
+    margin-bottom: 1rem;
+  }
+
+  .stat-header {
+    padding: 1rem;
+  }
+
+  .stat-details {
+    padding: 1rem;
+  }
+
+  .level-stat {
+    padding: 0.75rem;
   }
 }
 
 @media (max-width: 480px) {
-  .theme-switcher {
-    bottom: 5.5rem;
-    transform: translateX(-50%) scale(0.85);
-  }
-}
-
-/* Theme-specific colors for text and toasts */
-/* Green Theme (Default) */
-body.theme-green .text-primary,
-body.theme-green input::placeholder,
-body.theme-green .search-section input[type="text"] {
-  color: #357d39;
-}
-
-body.theme-green .toast.success {
-  background: linear-gradient(135deg, #45a049, #357d39);
-}
-
-body.theme-green .toast.error {
-  background: linear-gradient(135deg, #dc2626, #b91c1c);
-}
-
-/* Purple Theme */
-body.theme-purple .text-primary,
-body.theme-purple input::placeholder,
-body.theme-purple .search-section input[type="text"] {
-  color: #800080;
-}
-
-body.theme-purple .toast.success {
-  background: linear-gradient(135deg, #800080, #4a0080);
-}
-
-body.theme-purple .toast.error {
-  background: linear-gradient(135deg, #ef4444, #dc2626);
-}
-
-/* Blue Theme */
-body.theme-blue .text-primary,
-body.theme-blue input::placeholder,
-body.theme-blue .search-section input[type="text"] {
-  color: #1e3a8a;
-}
-
-body.theme-blue .toast.success {
-  background: linear-gradient(135deg, #1e3a8a, #1e40af);
-}
-
-body.theme-blue .toast.error {
-  background: linear-gradient(135deg, #991b1b, #7f1d1d);
-}
-
-/* Update input focus colors for each theme */
-body.theme-green .search-section input[type="text"]:focus {
-  border-color: #45a049;
-}
-
-body.theme-purple .search-section input[type="text"]:focus {
-  border-color: #800080;
-}
-
-body.theme-blue .search-section input[type="text"]:focus {
-  border-color: #1e3a8a;
-}
-
-/* Update instruction text colors */
-body.theme-green .bg-white\/90 h2 {
-  color: #357d39;
-}
-
-body.theme-purple .bg-white\/90 h2 {
-  color: #800080;
-}
-
-body.theme-blue .bg-white\/90 h2 {
-  color: #1e3a8a;
-}
-
-/* Update search placeholder text */
-body.theme-green input::placeholder {
-  color: rgba(53, 125, 57, 0.8);
-}
-
-body.theme-purple input::placeholder {
-  color: rgba(128, 0, 128, 0.8);
-}
-
-body.theme-blue input::placeholder {
-  color: rgba(30, 58, 138, 0.8);
-}
-
-/* Admin theme colors */
-body.theme-admin .search-section input[type="text"] {
-  color: #dc2626;
-}
-
-body.theme-admin .search-section input[type="text"]::placeholder {
-  color: rgba(220, 38, 38, 0.7);
-}
-
-/* Compact the inline edit container for attendance */
-.attendance-field .inline-edit-container {
-  margin: 0;
-  padding: 0;
-}
-
-.attendance-field .inline-edit-select {
-  min-width: 90px;
-  padding: 4px 24px 4px 8px;
-  font-size: 0.9rem;
-}
-
-/* Update responsive styles */
-@media (max-width: 640px) {
-  .filter-container {
-    flex-direction: column;
-    gap: 0.75rem;
+  body {
+    padding: 0.5rem;
   }
 
-  .download-button {
-    width: 100%;
-  }
-}
-
-.stat-download-button {
-  background: rgba(255, 255, 255, 0.2);
-  color: white;
-  border: 1px solid rgba(255, 255, 255, 0.3);
-  padding: 0.5rem 1rem;
-  border-radius: 6px;
-  cursor: pointer;
-  font-size: 0.9rem;
-  transition: all 0.3s ease;
-  margin-left: 1rem;
-  white-space: nowrap;
-}
-
-.stat-download-button:hover {
-  background: rgba(255, 255, 255, 0.3);
-  transform: translateY(-1px);
-}
-
-/* Add a fallback for browsers that don't support backdrop-filter */
-@supports not (backdrop-filter: blur(8px)) {
-  #cardsContainer {
-    background: rgba(255, 255, 255, 0.95);
+  .search-and-theme-container {
+    padding: 0 0.5rem;
   }
 
-  .result-item {
-    background: rgba(255, 255, 255, 0.9);
-  }
-
-  .result-item p {
-    background: rgba(255, 255, 255, 0.95);
-  }
-}
-
-/* Optimize performance by using hardware acceleration */
-#cardsContainer,
-.result-item {
-  transform: translateZ(0);
-  will-change: transform;
-}
-
-/* Update Theme Switcher position and style */
-.theme-switcher {
-  position: fixed;
-  bottom: 6rem;
-  left: 50%;
-  transform: translateX(-50%);
-  display: flex;
-  gap: 0.5rem;
-  background: rgba(255, 255, 255, 0.15);
-  padding: 0.4rem;
-  border-radius: 50px;
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  z-index: 98;
-  width: 200px; /* Increased width to accommodate dark mode */
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-}
-
-.theme-button {
-  flex: 1;
-  height: 28px; /* Slightly smaller height */
-  border-radius: 50px;
-  border: 2px solid rgba(255, 255, 255, 0.3);
-  cursor: pointer;
-  background: rgba(255, 255, 255, 0.2);
-  transition: all 0.3s ease;
-  position: relative;
-  overflow: hidden;
-}
-
-/* Theme button backgrounds */
-.green-theme {
-  background: linear-gradient(135deg, #45a049, #245326);
-}
-
-.purple-theme {
-  background: linear-gradient(135deg, #800080, #4a0080);
-}
-
-.blue-theme {
-  background: linear-gradient(135deg, #1e3a8a, #1e40af);
-}
-
-.theme-button:hover {
-  transform: scale(1.05);
-  border-color: rgba(255, 255, 255, 0.8);
-}
-
-.theme-button.active {
-  border-color: white;
-  box-shadow: 0 0 15px rgba(255, 255, 255, 0.3);
-  transform: scale(1.1);
-}
-
-/* Glass effect container */
-.theme-switcher::before {
-  content: "";
-  position: absolute;
-  top: -0.5rem;
-  left: -0.5rem;
-  right: -0.5rem;
-  bottom: -0.5rem;
-  background: rgba(255, 255, 255, 0.1);
-  border-radius: 60px;
-  z-index: -1;
-  backdrop-filter: blur(4px);
-  -webkit-backdrop-filter: blur(4px);
-  opacity: 0.5;
-}
-
-/* Responsive adjustments for theme switcher */
-@media (max-width: 768px) {
-  .theme-switcher {
-    width: 180px;
-    padding: 0.35rem;
-    gap: 0.4rem;
-    bottom: 5.5rem;
+  .search-section input[type="text"] {
+    padding: 0.75rem;
+    font-size: 0.9rem;
   }
 
   .theme-button {
     height: 24px;
   }
 
-  /* Adjust other elements for better mobile layout */
-  .search-section input[type="text"] {
-    font-size: 0.95rem;
-    padding: 0.75rem 1rem;
+  .result-item h3 {
+    padding: 0.5rem;
   }
 
-  .stat-card {
+  .result-item p {
+    padding: 0.5rem;
+  }
+
+  .attendance-buttons .selection-button {
+    padding: 0.5rem;
+    font-size: 0.85rem;
+  }
+
+  .fixed-buttons {
+    padding: 0 0.5rem;
+  }
+
+  .download-button {
+    padding: 0.5rem 1rem;
+    font-size: 0.85rem;
+  }
+
+  .modal-content {
+    padding: 1rem;
+    width: 95%;
+  }
+
+  .form-actions {
+    padding: 0.5rem;
+    gap: 0.5rem;
+  }
+
+  .form-actions button {
+    padding: 0.5rem;
+    font-size: 0.9rem;
+  }
+}
+
+/* Update selection container for mobile */
+@media (max-width: 768px) {
+  .selection-container {
+    padding: 0.5rem;
+  }
+
+  .selection-container .selection-button {
     padding: 0.75rem;
+    font-size: 0.9rem;
+  }
+}
+
+/* Update toast notifications for mobile */
+@media (max-width: 768px) {
+  .toast {
+    min-width: 250px;
+    padding: 12px 24px;
+    font-size: 0.9rem;
+  }
+
+  .toast svg {
+    width: 20px;
+    height: 20px;
+  }
+}
+
+/* Update stats container for mobile */
+@media (max-width: 768px) {
+  .stats-container {
+    padding: 1rem;
+    margin-bottom: 1rem;
+  }
+
+  .stats-grid {
+    gap: 0.75rem;
+  }
+}
+
+/* Theme Switcher position and style */
+.theme-switcher-container {
+  max-width: 42rem;
+  margin: 0 auto 1.5rem;
+  width: 100%;
+}
+
+.theme-preview-box {
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 12px;
+  padding: 0.75rem 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  min-height: 3.5rem;
+  gap: 1rem;
+}
+
+.theme-buttons {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+  flex: 1;
+}
+
+.theme-button {
+  flex: 1;
+  height: 36px;
+  border-radius: 8px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  min-width: 80px;
+}
+
+.theme-button:hover {
+  transform: scale(1.02);
+  border-color: rgba(255, 255, 255, 0.8);
+}
+
+.theme-button.active {
+  border-color: white;
+  box-shadow: 0 0 15px rgba(255, 255, 255, 0.3);
+}
+
+.dark-mode-toggle {
+  background: transparent;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  font-size: 1.5rem;
+  cursor: pointer;
+  padding: 0.5rem;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+  width: 50px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.dark-mode-toggle:hover {
+  transform: scale(1.02);
+  border-color: rgba(255, 255, 255, 0.8);
+}
+
+@media (max-width: 768px) {
+  .theme-preview-box {
+    padding: 0.75rem 1rem;
+    gap: 0.75rem;
+  }
+
+  .theme-buttons {
+    gap: 0.5rem;
+  }
+
+  .theme-button {
+    height: 32px;
+    min-width: 60px;
+  }
+
+  .dark-mode-toggle {
+    width: 40px;
+    height: 32px;
+    font-size: 1.25rem;
   }
 }
 
 @media (max-width: 480px) {
-  .theme-switcher {
-    width: 120px; /* Even smaller on phones */
-    bottom: 5rem;
-    padding: 0.3rem;
-    gap: 0.3rem;
+  .theme-preview-box {
+    padding: 0.5rem 0.75rem;
+    gap: 0.5rem;
+  }
+
+  .theme-buttons {
+    gap: 0.35rem;
   }
 
   .theme-button {
-    height: 22px;
+    height: 28px;
+    min-width: 45px;
   }
 
-  /* Adjust buttons container for mobile */
-  .fixed-buttons {
-    bottom: 1rem;
-  }
-
-  .add-button {
-    width: 50px;
-    height: 50px;
-    font-size: 1.5rem;
-  }
-
-  /* Adjust admin logout button for mobile */
-  .admin-logout-button {
-    padding: 0.5rem 1rem;
-    font-size: 0.9rem;
+  .dark-mode-toggle {
+    width: 36px;
+    height: 28px;
+    font-size: 1rem;
   }
 }
 
@@ -1447,4 +1426,21 @@ body.theme-blue .selection-container .selection-button.selected {
     transform: scale(0.95);
     opacity: 0;
   }
+}
+
+/* Theme button backgrounds */
+.green-theme {
+  background: linear-gradient(135deg, #45a049, #245326);
+}
+
+.purple-theme {
+  background: linear-gradient(135deg, #800080, #4a0080);
+}
+
+.blue-theme {
+  background: linear-gradient(135deg, #1e3a8a, #1e40af);
+}
+
+.admin-theme {
+  background: linear-gradient(135deg, #1f2937, #111827);
 }
