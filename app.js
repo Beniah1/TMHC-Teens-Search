@@ -4,6 +4,13 @@ const supabase = window.supabase.createClient(
   "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpudXhhaGRxeGVuY3F0c3Z4dmphIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzc4MDQzNjUsImV4cCI6MjA1MzM4MDM2NX0.8evCXHMfkn1yhsVB8lQ62BL3b6-j4KZ_oszTuYLT6G0"
 );
 
+// Performance optimization constants
+const CACHE_DURATION = 10 * 60 * 1000; // 10 minutes cache
+const DEBOUNCE_DELAY = 250; // Increased debounce delay
+const BATCH_SIZE = 20; // Reduced batch size for smoother rendering
+const VIRTUAL_SCROLL_BUFFER = 10; // Number of items to render above/below viewport
+const SCROLL_THROTTLE = 16; // ~60fps
+
 // Cache DOM elements
 const elements = {
   searchInput: document.getElementById("searchInput"),
@@ -56,11 +63,6 @@ let searchCache = {
 
 let lastSearchTerm = "";
 let searchTimeout;
-
-// Add performance constants
-const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes cache
-const DEBOUNCE_DELAY = 100;
-const BATCH_SIZE = 50;
 
 // First, update the debounce function
 function debounce(func, wait) {
