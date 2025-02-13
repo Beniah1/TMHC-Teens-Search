@@ -1,0 +1,62 @@
+[33ma0d88f5[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m, [m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m)[m 🎨 Refactor item HTML rendering with cleaner, more compact structure
+[33m1b9a915[m 🚀 Optimize performance with refined rendering and caching constants
+[33m21ccc62[m ✨ Enhance attendance and info section with select dropdowns and dynamic styling
+[33m86551f8[m 🎨 Improve responsive grid layout and mobile styling for cards and results
+[33m9cd8c93[m ✨ Refactor item display and add button styling with responsive design
+[33m9479289[m 🎨 Refactor theme switcher and search layout with responsive design
+[33mbc98c85[m 🔧 Refactor dropdown edit function with improved code formatting and error handling
+[33mcdfc815[m 🔧 Improve dropdown editing with robust error handling and UI feedback
+[33me4e2bb8[m 🔧 Refine attendance and field editing with interactive UI improvements
+[33m08b7ebb[m 🔧 Refactor inline editing and item display with enhanced interactivity
+[33m97dea07[m ✨ Implement inline editing for student records with dynamic UI
+[33md2e5ac8[m Removed the edit and delete bar
+[33m1a883bb[m ✨ Add inline editing for item details with interactive UI
+[33mdfc67bc[m ✨ Enhance scrollbar styling with smooth scrolling and interaction states
+[33m568bbe8[m 🔧 Restructure page layout and simplify user guide
+[33m6c2131f[m 📝 Update user guide with new feature descriptions and usage instructions
+[33mdf58a15[m 🌐 Add favicon and touch icons for improved branding
+[33m9db9fc5[m 🎨 Enhance status indicator with blur effect and mobile optimizations
+[33m5009e8f[m 🎨 Fine-tune background color opacity in result section
+[33me3dc748[m 🔧 Refactor theme switcher and dark mode implementation
+[33m6ae8ffc[m ✨ Implement dark mode with theme preservation and responsive design
+[33m76ffafa[m 🎨 Refine mobile-first responsive design with comprehensive styling updates
+[33md708203[m 🔧 Update .gitignore with build and log file exclusions
+[33md57528b[m 🎨 Optimize mobile layout and responsive design
+[33m57d98ff[m 🎨 Add theme-specific input styling for search section
+[33m06b2714[m 🎨 Enhance button styling and layout in result items
+[33mfda8895[m 🎨 Refactor result item layout and button positioning
+[33maf58af4[m 🎨 Improve result item layout and button styling
+[33m393542e[m ✨ Add toast notifications for login and save actions
+[33m63cde48[m 🎨 Refine theme switcher and mobile responsiveness
+[33m1b12399[m ✨ Add CSV download functionality for TMHCT data
+[33mfd501f5[m 🐛 Fix admin authentication error logging
+[33m0ce2318[m ✨ Implement admin authentication and login modal
+[33m8bba890[m ✨ Add admin theme and admin features integration
+[33m9ae5207[m 🎨 Enhance theme-specific styling for colors, toasts, and inputs
+[33m35f91ea[m ✨ Add theme switcher with multiple color themes and persistent selection
+[33me5b1470[m 🎨 Enhance card and result item design with glassmorphism effects
+[33m6b4765b[m 🎨 Enhance category filter and download button design
+[33meb3dcac[m 🎨 Refine UI styling and toast functionality
+[33m13f8400[m ✔️ (b1) Add category filtering and optimize search performance
+[33mf082c28[m Optimize UI performance and reduce animation timings
+[33mba0c429[m Added a readme
+[33m51dc6fd[m ign
+[33m7815de6[m ✔️ edited some things
+[33m18b8c34[m edited the button etc
+[33m5a15a1b[m ✔️ Fix all issues in - Prp
+[33mbfe880a[m ❌-Prp
+[33m4f86615[m Add anime for the X button
+[33m1ee3314[m edited the close button and made a sep css file
+[33m489ebd3[m edited
+[33m79580ff[m edited
+[33md4c5d03[m ✔️(b) added a blur effect and added animation for the x button.
+[33m3189480[m Edited
+[33m602c00b[m Edited the edit info page and changed the close color
+[33m3ec1908[m Made edits to the Edit Info page
+[33me7019d5[m Added Improved Animations for websites for all areas.
+[33m53969bb[m ✔️(a1) feat: implement debounced search input and simplify loading feedback
+[33m05c5ed3[m feat: update search instructions and clear initial message in the cards container
+[33m0db08f5[m ✔️ style: enhance button appearance with gradient background and shadow effects
+[33mce4a609[m style: improve layout and styling for responsiveness and consistency
+[33m4196ce1[m feat: enhance search functionality with loading indicators and error handling
+[33md9c97bb[m feat: add main application logic with Supabase integration for data management
